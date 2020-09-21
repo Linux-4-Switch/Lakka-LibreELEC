@@ -26,7 +26,6 @@ RUN apt-get update \
 	&& apt-get install -y \
 		liblz4-tool \
 		python3 \
-		libc6-dev-i386 \
 		python2-minimal \
 		default-jre \
 		sudo \

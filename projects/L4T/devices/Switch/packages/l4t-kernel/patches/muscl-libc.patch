@@ -1,0 +1,78 @@
+--- a/include/uapi/linux/libc-compat.h	2020-09-18 05:06:40.832741497 +0200
++++ b/include/uapi/linux/libc-compat.h	2020-09-18 05:04:30.673743517 +0200
+@@ -263,4 +263,24 @@
+ 
+ #endif /* __GLIBC__ */
+ 
++/* Definitions for arch/arm64/include/uapi/asm/sigcontext.h */
++#ifndef __UAPI_DEF_SIGCONTEXT
++#define __UAPI_DEF_SIGCONTEXT		1
++#endif
++#ifndef __UAPI_DEF_AARCH64_CTX
++#define __UAPI_DEF_AARCH64_CTX		1
++#endif
++#ifndef __UAPI_DEF_FPSIMD_CONTEXT
++#define __UAPI_DEF_FPSIMD_CONTEXT	1
++#endif
++#ifndef __UAPI_DEF_ESR_CONTEXT
++#define __UAPI_DEF_ESR_CONTEXT		1
++#endif
++#ifndef __UAPI_DEF_EXTRA_CONTEXT
++#define __UAPI_DEF_EXTRA_CONTEXT	1
++#endif
++#ifndef __UAPI_DEF_SVE_CONTEXT
++#define __UAPI_DEF_SVE_CONTEXT		1
++#endif
++
+ #endif /* _UAPI_LIBC_COMPAT_H */
+
+--- a/arch/arm64/include/uapi/asm/sigcontext.h	2020-09-18 05:08:13.585740058 +0200
++++ b/arch/arm64/include/uapi/asm/sigcontext.h	2020-09-18 05:10:24.478738027 +0200
+@@ -18,7 +18,9 @@
+ 
+ #ifdef CONFIG_64BIT
+ #include <linux/types.h>
++#include <linux/libc-compat.h>
+ 
++#if __UAPI_DEF_SIGCONTEXT
+ /*
+  * Signal context structure - contains all info to do with the state
+  * before the signal handler was invoked.
+@@ -33,7 +35,9 @@
+ 	/* 4K reserved for FP/SIMD state and future expansion */
+ 	__u8 __reserved[4096] __attribute__((__aligned__(16)));
+ };
++#endif
+ 
++#if __UAPI_DEF_AARCH64_CTX
+ /*
+  * Header to be used at the beginning of structures extending the user
+  * context. Such structures must be placed after the rt_sigframe on the stack
+@@ -44,7 +48,9 @@
+ 	__u32 magic;
+ 	__u32 size;
+ };
++#endif
+ 
++#if __UAPI_DEF_FPSIMD_CONTEXT
+ #define FPSIMD_MAGIC	0x46508001
+ 
+ struct fpsimd_context {
+@@ -53,7 +59,9 @@
+ 	__u32 fpcr;
+ 	__uint128_t vregs[32];
+ };
++#endif
+ 
++#if __UAPI_DEF_ESR_CONTEXT
+ /* ESR_EL1 context */
+ #define ESR_MAGIC	0x45535201
+ 
+@@ -61,6 +69,7 @@
+ 	struct _aarch64_ctx head;
+ 	__u64 esr;
+ };
++#endif
+ 
+ #else /* CONFIG_64BIT */
+ 
