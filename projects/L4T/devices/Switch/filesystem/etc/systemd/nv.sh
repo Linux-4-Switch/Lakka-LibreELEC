@@ -322,6 +322,15 @@ if [ $? -eq 0 ]; then
 	fi
 fi
 
+# Add lightdm in video group
+grep "lightdm" "/etc/group" > /dev/null
+if [ $? -eq 0 ]; then
+	groups "lightdm" | grep "video" > /dev/null
+	if [ $? -eq 1 ]; then
+		addgroup "lightdm" "video"
+	fi
+fi
+
 if [ -e "/var/lib/lightdm" ]; then
 	sudo chown lightdm:lightdm /var/lib/lightdm -R
 fi

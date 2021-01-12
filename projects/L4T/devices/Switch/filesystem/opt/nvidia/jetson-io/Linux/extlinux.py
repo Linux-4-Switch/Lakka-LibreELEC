@@ -65,9 +65,11 @@ def add_entry(extlinux, label, mlabel, dtb, default):
                     default_entry_initrd = line.strip()
                 elif words[0] == 'APPEND':
                     default_entry_append = line.strip()
-                elif words[0] == 'LABEL' and words[1] != current_label:
-                    # Stop if meeting the next LABEL
-                    current_label = "#"
+                elif words[0] == 'LABEL':
+                    words = line.strip().split(' ', 1)
+                    if words[1] != current_label:
+                        # Stop if meeting the next LABEL
+                        current_label = "#"
         if default:
             line = re.sub(r'^DEFAULT .*', 'DEFAULT %s' % label, line)
         if entry == line.strip():

@@ -127,7 +127,7 @@ class update_type_payload(payload):
 class system_info(object):
     # part_name : (offset, size)
 
-    # jetson-nano-qspi*
+    # jetson-nano-qspi* and jetson-nano-2gb-devkit
     _spi_main_boot_partition_table = {
         'BCT'  : (0, 262144),
         'NVC'  : (262144, 196608),
@@ -337,7 +337,7 @@ class system_info(object):
             'secondary': dict()
         }
 
-        if "jetson-nano-qspi" in self.system_spec:
+        if "jetson-nano-qspi" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
             boot_partition_table['main'] = system_info._spi_main_boot_partition_table # /dev/mtdblock0
             boot_partition_table['secondary'] = None # only main boot device present
         elif "jetson-tx1" in self.system_spec:
@@ -530,7 +530,7 @@ class install_update_payload(update_type_payload, system_info):
 
         # there will be as many BCT copies as required to fill the system's entire BCT partition,
         # up to maximum 64 blocks,
-        if "jetson-nano-qspi" in self.system_spec:
+        if "jetson-nano-qspi" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
             # update order: VER_b, last block BCT "BCT8", NVC, block-6 BCT "BCT7" to block-0 BCT "BCT", NVC, VER
             # (contains 2 page-aligned BCT copies in 2 slots for qspi)
             boot_part_name_update_order_list = ['VER_b', 'BCT_L', 'NVC_R', 'BCTN', 'BCT', 'NVC', 'VER']
@@ -717,7 +717,7 @@ class install_update_payload(update_type_payload, system_info):
         nvc_data = self._read_partition_data(nvc_entry)
 
         # get NVC-1 part data
-        if "jetson-nano-qspi-sd" in self.system_spec:
+        if "jetson-nano-qspi-sd" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
             nvc_name = 'NVC_R'
         else:
             nvc_name = 'NVC-1'
@@ -898,7 +898,7 @@ class install_update_payload(update_type_payload, system_info):
 
     def _validate_entry_list(self):
         skip_check_version = False
-        if "jetson-nano-qspi-sd" in self.system_spec:
+        if "jetson-nano-qspi-sd" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
             skip_check_version = self._skip_check_old_ver()
 
         if skip_check_version is False:
@@ -931,8 +931,8 @@ class install_update_payload(update_type_payload, system_info):
 
                 # Checking block-0 BCT
                 if part_name == 'BCT':
-                    # require two BCTs in block-0 for jetson-nano-qspi*
-                    if "jetson-nano-qspi" in self.system_spec:
+                    # require two BCTs in block-0 for jetson-nano-qspi* or jetson-nano-2gb-devkit
+                    if "jetson-nano-qspi" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
                         block0_bct_cpy = 2
                     else:
                         block0_bct_cpy = 1
@@ -1013,7 +1013,7 @@ class install_update_payload(update_type_payload, system_info):
         return system_bin_data
 
     def _set_boot_part_write_en(self, write_enable):
-        if "jetson-nano-qspi" in self.system_spec:
+        if "jetson-nano-qspi" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
             return # qspi device always has writes enabled
 
         for dev in self.system_boot_dev_info:
@@ -1141,8 +1141,8 @@ class install_update_payload(update_type_payload, system_info):
             update_bin_data_size = int(blob_entry['part_size'])
             update_bin_data = self.blob_file.read(update_bin_data_size)
 
-            # require two BCTs in block-0 for jetson-nano-qspi*
-            if "jetson-nano-qspi" in self.system_spec:
+            # require two BCTs in block-0 for jetson-nano-qspi* and jetson-nano-2gb-devkit
+            if "jetson-nano-qspi" in self.system_spec or "jetson-nano-2gb-devkit" in self.system_spec:
                 block0_bct_cpy = 2
             else:
                 block0_bct_cpy = 1

@@ -1,4 +1,4 @@
-# Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2019-2020, NVIDIA CORPORATION. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the "Software"),
@@ -226,11 +226,13 @@ class Board(object):
         suffix = name.replace(' ', '-').lower()
         dtb = self.gen_dtb_filename(suffix, self.bootdir)
         dtc.overlay(self.dtb, dtb, dtbo)
-        extlinux.add_entry(self.extlinux, name, name, dtb, True)
         if self.appdir:
+            appextlinux = os.path.join(self.appdir, self.extlinux[1:])
+            extlinux.add_entry(appextlinux, name, name, dtb, True)
             shutil.copyfile(dtb, os.path.join(self.appdir, dtb[1:]))
-            shutil.copyfile(self.extlinux, os.path.join(self.appdir,
-                            self.extlinux[1:]))
+            shutil.copyfile(appextlinux, self.extlinux)
+        else:
+            extlinux.add_entry(self.extlinux, name, name, dtb, True)
         return dtb
 
     def create_dtb_for_header(self):
@@ -243,10 +245,13 @@ class Board(object):
         finally:
             if os.path.exists(dtbo):
                 os.remove(dtbo)
-        extlinux.add_entry(self.extlinux, 'JetsonIO',
-                           "Custom 40-pin Header Config", dtb, True)
+
+        name = "Custom 40-pin Header Config"
         if self.appdir:
+            appextlinux = os.path.join(self.appdir, self.extlinux[1:])
+            extlinux.add_entry(appextlinux, 'JetsonIO', name, dtb, True)
             shutil.copyfile(dtb, os.path.join(self.appdir, dtb[1:]))
-            shutil.copyfile(self.extlinux, os.path.join(self.appdir,
-                            self.extlinux[1:]))
+            shutil.copyfile(appextlinux, self.extlinux)
+        else:
+            extlinux.add_entry(self.extlinux, 'JetsonIO', name, dtb, True)
         return dtb

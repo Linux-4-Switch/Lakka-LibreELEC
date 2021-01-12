@@ -1,0 +1,17 @@
+#
+# Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
+#
+
+[Unit]
+Description=ZRAM configuration
+; Everything depends on the NVIDIA per-boot script
+After=nv.service
+; TPC power gating must be enabled before anything touching gpu
+After=nvpmodel.service
+
+[Service]
+Type=simple
+ExecStart=/etc/systemd/nvzramconfig.sh
+
+[Install]
+WantedBy=multi-user.target
