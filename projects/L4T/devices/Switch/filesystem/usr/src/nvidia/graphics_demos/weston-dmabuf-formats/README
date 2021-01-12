@@ -1,0 +1,45 @@
+#
+# Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+
+This directory contains a simple application to test different color formats on Weston.
+The application allocates buffers for specified color format using nvbuf_utils
+and posts these buffers to Weston for composition.
+Currently it supports allocation for below pitch linear formats:
+	- XRGB8888, NV12, NV16, NV24.
+
+Steps to compile the test app.
+	- $sudo apt install gcc
+	- $sudo apt install libdrm-dev
+	- $sudo apt install libwayland-dev
+	- $sudo apt-get install libgbm-dev
+
+	- Generate wayland-protocol header files using wayland-scanner
+		$git clone https://gitlab.freedesktop.org/wayland/wayland-protocols.git -b 1.17 wayland-protocols-1.17
+		$cd wayland-protocols-1.17
+		$wayland-scanner client-header stable/xdg-shell/xdg-shell.xml xdg-shell-client-protocol.h
+		$wayland-scanner client-header unstable/linux-dmabuf/linux-dmabuf-unstable-v1.xml linux-dmabuf-unstable-v1-client-protocol.h
+		$wayland-scanner client-header unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml fullscreen-shell-unstable-v1-client-protocol.h
+
+	- Copy above three wayland-protocol header files to /usr/include
+	- Download nvbuf_utils.h header file (open-source) and copy it to /usr/include
+	- Create a softlink to fullscreen-shell.so
+		$sudo ln -s /usr/lib/aarch64-linux-gnu/tegra/weston/fullscreen-shell.so /usr/lib/aarch64-linux-gnu/fullscreen-shell.so

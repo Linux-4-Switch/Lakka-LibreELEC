@@ -1,0 +1,156 @@
+# Copyright (c) 2020, NVIDIA CORPORATION.  All rights reserved.
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the "Software"),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+
+#This Makefile supports aarch64 builds
+
+CFLAGS   = $(NV_PLATFORM_OPT)     $(NV_PLATFORM_CFLAGS)
+CPPFLAGS = $(NV_PLATFORM_SDK_INC) $(NV_PLATFORM_CPPFLAGS)
+LDFLAGS  = $(NV_PLATFORM_SDK_LIB) $(NV_PLATFORM_LDFLAGS)
+
+NV_PLATFORM_OPT       = -Os
+NV_PLATFORM_CFLAGS    = -O2 \
+			-fomit-frame-pointer \
+			-finline-functions \
+			-finline-limit=300 \
+			-fgcse-after-reload
+
+#Append common cflags
+NV_PLATFORM_CFLAGS   += -fno-strict-aliasing \
+			-Wall \
+			-Wcast-align
+
+NV_PLATFORM_CPPFLAGS  = -DNV_GLES_VER_MAJOR=2 -DWIN_INTERFACE_CUSTOM
+
+NV_PLATFORM_LDFLAGS   = -Wl,--dynamic-linker=/lib/ld-linux-aarch64.so.1 \
+			-L${ROOTFS}/usr/lib/aarch64-linux-gnu/tegra-egl \
+			-L${ROOTFS}/usr/lib/aarch64-linux-gnu/tegra \
+			-L$(TOOLCHAIN_DIR)/../aarch64-unknown-linux-gnu/sysroot/usr/lib \
+			-L${ROOTFS}/usr/lib/aarch64-linux-gnu \
+			-Wl,-rpath-link=$(ROOTFS)/usr/lib/aarch64-linux-gnu/tegra-egl \
+			-Wl,-rpath-link=$(ROOTFS)/usr/lib/aarch64-linux-gnu/tegra \
+			-Wl,-rpath-link=$(ROOTFS)/usr/lib/aarch64-linux-gnu \
+			-Wl,-rpath-link=$(ROOTFS)/lib/aarch64-linux-gnu
+
+NV_PLATFORM_SDK_INC_DIR = ../include
+NV_PLATFORM_NVGL_INC_DIR = ../nvgldemo
+NV_PLATFORM_GEAR_INC_DIR = ../gears-lib
+NV_PLATFORM_TEXFONT_INC_DIR = ../nvtexfont
+
+NV_PLATFORM_SDK_INC   = -I$(NV_PLATFORM_SDK_INC_DIR) \
+			-I$(NV_PLATFORM_NVGL_INC_DIR) \
+			-I$(NV_PLATFORM_TEXFONT_INC_DIR) \
+			-I$(NV_PLATFORM_GEAR_INC_DIR)
+
+NV_PLATFORM_SDK_LIB   = -L$(NV_PLATFORM_SDK_LIB_DIR) \
+			-L$(NV_PLATFORM_SDK_LIB_DIR)/$(NV_WINSYS) \
+			-Wl,-rpath-link=$(NV_PLATFORM_SDK_LIB_DIR) \
+			-Wl,-rpath-link=$(NV_PLATFORM_SDK_LIB_DIR)/$(NV_WINSYS)
+
+NV_PLATFORM_MATHLIB   = -lm
+NV_PLATFORM_THREADLIB = -lpthread
+
+CC     = ${TOOLCHAIN_PREFIX}gcc
+CXX    = ${TOOLCHAIN_PREFIX}g++
+AR     = ${TOOLCHAIN_PREFIX}ar
+ifeq ($(LD),ld)
+LD = $(if $(wildcard *.cpp),$(CXX),$(CC))
+endif
+#RANLIB, STRIP, NM are empty by default
+RANLIB ?= ${TOOLCHAIN_PREFIX}ranlib
+STRIP  ?= ${TOOLCHAIN_PREFIX}strip
+NM     ?= ${TOOLCHAIN_PREFIX}nm
+
+$(warning using CC      = $(CC))
+$(warning using CXX     = $(CXX))
+$(warning using AR      = $(AR))
+$(warning using LD      = $(LD))
+$(warning using RANLIB  = $(RANLIB))
+$(warning using STRIP   = $(STRIP))
+$(warning using NM      = $(NM))
+$(warning If this is not intended please unset and re-make)
+
+STRINGIFY = /bin/sed -e 's|\"|\\\"|g;s|^.*$$|"&\\n"|'
+
+%.glslvh: %.glslv
+	/bin/cat $(filter %.h,$^) $(filter %.glslv,$^) | \
+	$(STRINGIFY) > $@
+
+%.glslfh: %.glslf
+	/bin/cat $(filter %.h,$^) $(filter %.glslf,$^) | \
+	$(STRINGIFY) > $@
+
+# support for windowing system subdirs
+
+NV_LIST_WINSYS :=  egldevice wayland x11
+ifndef NV_WINSYS
+NV_WINSYS := x11
+ifneq ($(NV_WINSYS),$(NV_LIST_WINSYS))
+$(warning Defaulting NV_WINSYS to x11; legal values are: $(NV_LIST_WINSYS))
+endif
+endif
+
+ifeq ($(NV_WINSYS),egldevice)
+NV_PLATFORM_CPPFLAGS +=
+NV_PLATFORM_WINSYS_LIBS = -ldl
+NV_PLATFORM_SDK_INC += -I$(DRM_INC)
+else ifeq ($(NV_WINSYS),wayland)
+NV_PLATFORM_CPPFLAGS += -DWAYLAND
+NV_PLATFORM_SDK_INC += -I$(WAYLAND_INC) \
+                       -I$(XKBCOMMON_INC) \
+                       -I$(TARGET_ROOTFS)/usr/include/libdrm/nvidia \
+                       -I$(TARGET_ROOTFS)/usr/include/libdrm
+
+NV_PLATFORM_WINSYS_LIBS = \
+		-l:libxkbcommon.so.0 -l:libwayland-client.so.0 -l:libwayland-egl.so.1 -l:libffi.so.6
+else ifeq ($(NV_WINSYS),x11)
+NV_PLATFORM_CPPFLAGS += -DX11
+NV_PLATFORM_SDK_INC  += -I$(X11_INC)
+NV_PLATFORM_WINSYS_LIBS = -l:libX11.so.6 -l:libXau.so.6
+else
+$(error Invalid NV_WINSYS value: $(NV_WINSYS))
+endif
+
+$(NV_WINSYS)/%.o : %.c
+	@mkdir -p $(NV_WINSYS)
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
+$(NV_WINSYS)/%.o : %.cpp
+	@mkdir -p $(NV_WINSYS)
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+
+# By default we use the following options
+#   - Use native functions for window and operating system interaction
+#   - Use source shaders
+#   - Build shaders into the application rather than using external data files
+# Any of these can be overridden with environment variables or by
+#   modifying this file. Note that demo executables must be build with the
+#   same settings as the demo libraries they link against.
+# If you choose external shader files, you will need to copy the files
+#   (.cgbin for binary, .glsl[fv] for source) to the platform along with
+#   the executable.
+NV_USE_BINARY_SHADERS ?= 0
+NV_USE_EXTERN_SHADERS ?= 0
+
+ifeq ($(NV_USE_BINARY_SHADERS),1)
+CPPFLAGS += -DUSE_BINARY_SHADERS
+endif
+ifeq ($(NV_USE_EXTERN_SHADERS),1)
+CPPFLAGS += -DUSE_EXTERN_SHADERS
+endif

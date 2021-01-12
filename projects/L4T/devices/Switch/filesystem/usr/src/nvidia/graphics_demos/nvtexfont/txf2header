@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# converts binary *.txf to a *.h header file, for including in the application
+
+[ -n "$1" ] || exit 1
+
+FONTNAME="$1"
+
+echo "static unsigned char ${FONTNAME}_font_data[] = {"
+
+# printing single character per line to prevent hexdump from padding input data
+# with zeros
+hexdump -v -e '1/1 " 0x%02X," "\n"' | fmt
+
+echo "};"

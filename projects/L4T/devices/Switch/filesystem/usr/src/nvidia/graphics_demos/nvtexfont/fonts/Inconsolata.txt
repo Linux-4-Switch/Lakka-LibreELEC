@@ -1,0 +1,6 @@
+The Inconsolata font is used as a vector font in nvtexfont.
+It has been converted into a mesh structure (which is encoded
+in inconsolata.h). It was created by Raph Levian and can be
+found at http://www.levien.com/type/myfonts/inconsolata.html.
+The font is licensed under the Open Font License.
+More information can be found at http://scripts.sil.org/OFL

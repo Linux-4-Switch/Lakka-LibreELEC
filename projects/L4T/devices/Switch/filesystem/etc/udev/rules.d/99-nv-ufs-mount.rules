@@ -1,0 +1,9 @@
+#
+# Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
+#
+
+# Mount UFS card when detected.
+ACTION=="add", KERNEL=="sd[a-z][0-9]", SUBSYSTEM=="block", RUN{program}+="/usr/bin/systemd-mount --no-block --automount=yes --collect $devnode /media/%E{ID_FS_UUID}"
+
+# Unmount UFS card when removed.
+ACTION=="remove", KERNEL=="sd[a-z][0-9]", SUBSYSTEM=="block", RUN{program}+="/usr/bin/systemd-umount /media/%E{ID_FS_UUID}"

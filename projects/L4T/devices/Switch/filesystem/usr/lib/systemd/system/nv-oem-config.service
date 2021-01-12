@@ -1,0 +1,34 @@
+# Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
+#
+# This file is based upon oem-config.service, provided
+# under the following terms:
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[Unit]
+Description=End-user configuration after initial OEM installation
+
+# We never want to run the oem-config job in the live environment (as is the
+# case in some custom configurations) or in recovery mode.
+ConditionKernelCommandLine=!boot=casper
+ConditionKernelCommandLine=!single
+ConditionKernelCommandLine=!rescue
+ConditionKernelCommandLine=!emergency
+
+[Service]
+Type=oneshot
+ExecStart=/etc/systemd/nv-oem-config.sh
+ExecStopPost=/etc/systemd/nv-oem-config-post.sh
+
+[Install]
+WantedBy=nv-oem-config.target

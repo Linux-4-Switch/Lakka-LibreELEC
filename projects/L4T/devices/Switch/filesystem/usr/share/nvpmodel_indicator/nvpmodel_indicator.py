@@ -13,11 +13,14 @@ import os
 import signal
 import gi
 import nvpmodel as nvpm
+import thermal_throttle_alert as thermal
+import over_current as oc
 import subprocess
 import time
 import threading
 import re
 import sys
+import multiprocessing as mp
 
 gi.require_version("Gtk", "3.0")
 gi.require_version('AppIndicator3', '0.1')
@@ -32,7 +35,12 @@ INDICATOR_ID = 'nvpmodel'
 ICON_DEFAULT = os.path.abspath('/usr/share/nvpmodel_indicator/nv_logo.svg')
 ICON_WARNING = 'dialog-warning'
 
+THROTTLE_ALERT = 'throttle-alert'
+HOT_SURFACE_ALERT = 'hot-surface-alert'
+
 notify_disable = False
+thermal_events = {}
+evt_queue = mp.Queue()
 
 def pm_update_active(item):
     cur_mode = pm.cur_mode()
@@ -62,28 +70,43 @@ def do_tegrastats(_):
     cmd = "x-terminal-emulator -e pkexec tegrastats".split()
     subprocess.call(cmd)
 
-def clear_throttling_notification():
+def clear_warning():
     indicator.set_icon(ICON_DEFAULT)
     item_throttle_evt.set_sensitive(False)
+    thermal_events.clear()
 
 def disable_notification(self):
     global notify_disable
     notify_disable = self.get_active()
     if notify_disable and indicator.get_icon() == ICON_WARNING:
-        clear_throttling_notification()
+        clear_warning()
 
 def quit(_):
     running.clear()
+    evt_queue.put(None)
     gtk.main_quit()
+
+def build_warning_msg(evt):
+    evt_sorted = sorted(evt)
+    throttle_events = [e.replace('throttle-', '') for e in evt_sorted if 'throttle-' in e]
+    device_is_hot = 'hot-surface-alert' in evt_sorted
+
+    msg_lines = []
+    if device_is_hot:
+        msg_lines.append(f"Caution - Hot surface. Do Not Touch.")
+    if throttle_events:
+        msg_lines.append(f"System throttled due to {', '.join(throttle_events)}.")
+    msg = '\n'.join(msg_lines)
+    return msg
 
 def ack_warning(*args):
     ack = gtk.MessageDialog(None, 0, gtk.MessageType.WARNING,
-        gtk.ButtonsType.CLOSE, "System was throttled due to low input voltage.")
+        gtk.ButtonsType.CLOSE, build_warning_msg(thermal_events))
     ack.set_title("WARNING")
     ack.format_secondary_text("")
     ack.run()
     ack.destroy()
-    clear_throttling_notification()
+    clear_warning()
 
 def build_menu():
     global item_throttle_evt
@@ -107,7 +130,7 @@ def build_menu():
     item_tstats.connect('activate', do_tegrastats)
     menu.append(item_tstats)
 
-    item_throttle_evt = gtk.MenuItem('Acknowledge throttling')
+    item_throttle_evt = gtk.MenuItem('Acknowledge warning')
     item_throttle_evt.set_sensitive(False)
     item_throttle_evt.connect('activate', ack_warning)
     menu.append(item_throttle_evt)
@@ -128,11 +151,12 @@ def build_menu():
     menu.show_all()
     return menu
 
-def do_warning():
+def do_warning(evt):
     if notify_disable:
         return
     indicator.set_icon(ICON_WARNING)
     item_throttle_evt.set_sensitive(True)
+    warning.update(build_warning_msg(evt))
     warning.show()
 
 def mode_change_monitor(running):
@@ -148,21 +172,35 @@ def mode_change_monitor(running):
                 priority=GObject.PRIORITY_DEFAULT)
         time.sleep(1)
 
+def wait_event(queue, event):
+    while True:
+        queue.put(event.wait_event())
+
 def evt_monitor(running):
-    evt_cnt = None
-    regex = re.compile(" *(\d+): +(\d+).*soctherm_edp.*")
+    events = [oc.OcEvent(), thermal.ThermalThrottleAlert(THROTTLE_ALERT), thermal.ThermalThrottleAlert(HOT_SURFACE_ALERT)]
+    monitors = [mp.Process(target=wait_event, args=(evt_queue, evt)) for evt in events]
+    new_events = {}
+    last_shown = 0.
+
+    for p in monitors:
+        p.daemon = True
+        p.start()
+
     while running.is_set():
-        for line in open("/proc/interrupts"):
-            m = regex.match(line)
-            if m != None:
-                break
-        if m == None:
-            return
-        if evt_cnt != m.group(2):
-            if evt_cnt:
-                do_warning()
-            evt_cnt = m.group(2)
-        time.sleep(1)
+        evt = evt_queue.get()
+        if evt is None:
+            continue
+        if THROTTLE_ALERT in evt[0]:
+            new_events['throttle-' + evt[1]] = True
+        elif HOT_SURFACE_ALERT in evt[0]:
+            new_events[evt[0]] = True
+        thermal_events.update(new_events)
+        now = time.monotonic()
+        if now - last_shown < 1:
+            continue
+        last_shown = now
+        do_warning(new_events)
+        new_events.clear()
 
 
 pm = nvpm.nvpmodel()
@@ -176,8 +214,7 @@ for mode in pm.power_modes():
 signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 notify.init(INDICATOR_ID)
-warning = notify.Notification.new("WARNING",
-    "system is now being throttled", None)
+warning = notify.Notification()
 
 indicator = appindicator.Indicator.new(INDICATOR_ID, ICON_DEFAULT,
     appindicator.IndicatorCategory.SYSTEM_SERVICES)
