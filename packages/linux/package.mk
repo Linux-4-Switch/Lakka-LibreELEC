@@ -52,6 +52,10 @@ case "$LINUX" in
     ;;
 esac
 
+if [ "$PROJECT" = "Switch" ]; then
+  PKG_SOURCE_DIR="linux-$PKG_VERSION"
+fi
+
 PKG_KERNEL_CFG_FILE=$(kernel_config_path) || die
 
 if [ -n "$KERNEL_TOOLCHAIN" ]; then
@@ -69,6 +73,31 @@ if [ "$TARGET_ARCH" = "x86_64" -o "$TARGET_ARCH" = "i386" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET intel-ucode:host kernel-firmware elfutils:host pciutils"
 elif [ "$TARGET_ARCH" = "arm" -a "$DEVICE" = "iMX6" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kernel-firmware"
+fi
+
+if [ "$TARGET_KERNEL_ARCH" = "arm64" -a "$TARGET_ARCH" = "arm" ]; then
+  if [ "$PROJECT" = "Switch" ]; then
+    PKG_DEPENDS_HOST="$PKG_DEPENDS_HOST gcc-linaro-aarch64-linux-gnu:host"
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-linux-gnu:host"
+    export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
+    TARGET_PREFIX=aarch64-linux-gnu-
+    OLD_CROSS_COMPILE=$CROSS_COMPILE
+    export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
+    PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
+  else
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-elf:host"
+    export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-elf/bin/:$PATH
+    TARGET_PREFIX=aarch64-elf-
+    OLD_CROSS_COMPILE=$CROSS_COMPILE
+    export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
+    PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
+  fi
+fi
+
+if [ "$PROJECT" = "Switch" ]; then
+    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kernel-firmware openssl:host"
+    export C_INCLUDE_PATH="$TOOLCHAIN/include:$C_INCLUDE_PATH"
+    export LIBRARY_PATH="$TOOLCHAIN/lib:$LIBRARY_PATH"
 fi
 
 if [[ "$KERNEL_TARGET" = uImage* ]]; then
@@ -134,15 +163,19 @@ make_host() {
 }
 
 makeinstall_host() {
-  make \
-    ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
-    HOSTCC="$TOOLCHAIN/bin/host-gcc" \
-    HOSTCXX="$TOOLCHAIN/bin/host-g++" \
-    HOSTCFLAGS="$HOST_CFLAGS" \
-    HOSTCXXFLAGS="$HOST_CXXFLAGS" \
-    HOSTLDFLAGS="$HOST_LDFLAGS" \
-    INSTALL_HDR_PATH=dest \
-    headers_install
+  if [ $TARGET_KERNEL_ARCH = "arm64" ] && [ $TARGET_ARCH == "arm"  ]; then
+    make ARCH=$TARGET_ARCH INSTALL_HDR_PATH=dest headers_install
+  else
+    make \
+      ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
+      HOSTCC="$TOOLCHAIN/bin/host-gcc" \
+      HOSTCXX="$TOOLCHAIN/bin/host-g++" \
+      HOSTCFLAGS="$HOST_CFLAGS" \
+      HOSTCXXFLAGS="$HOST_CXXFLAGS" \
+      HOSTLDFLAGS="$HOST_LDFLAGS" \
+      INSTALL_HDR_PATH=dest \
+      headers_install
+  fi
   mkdir -p $SYSROOT_PREFIX/usr/include
     cp -R dest/include/* $SYSROOT_PREFIX/usr/include
 }
@@ -168,6 +201,14 @@ pre_make_target() {
     FW_LIST="$(find $PKG_BUILD/external-firmware \( -type f -o -type l \) \( -iname '*.bin' -o -iname '*.fw' -o -path '*/intel-ucode/*' \) | sed 's|.*external-firmware/||' | sort | xargs)"
     sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|CONFIG_EXTRA_FIRMWARE=\"${FW_LIST}\"|" $PKG_BUILD/.config
     sed -i -e "/CONFIG_EXTRA_FIRMWARE_DIR/d" -e "/CONFIG_EXTRA_FIRMWARE=.../a CONFIG_EXTRA_FIRMWARE_DIR=\"external-firmware\"" $PKG_BUILD/.config
+  fi
+
+  if [ "$PROJECT" = "Switch" ]; then
+    mkdir -p $PKG_BUILD/external-firmware
+    cp -a $(get_build_dir kernel-firmware)/{nvidia,brcm} $PKG_BUILD/external-firmware
+
+    FW_LIST="$(find $PKG_BUILD/external-firmware \( -type f -o -type l \) \( -iname '*.bin' -o -iname '*.txt' -o -iname '*.hcd' \) | sed 's|.*external-firmware/||' | sort | xargs)"
+    sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|CONFIG_EXTRA_FIRMWARE=\"${FW_LIST}\"|" $PKG_BUILD/.config
   fi
 
   kernel_make olddefconfig
@@ -293,4 +334,10 @@ post_install() {
     if grep -q ^CONFIG_CFG80211_REQUIRE_SIGNED_REGDB= $PKG_BUILD/.config; then
       cp $(get_build_dir wireless-regdb)/regulatory.db{,.p7s} $INSTALL/$(get_full_firmware_dir)
     fi
+
+  # bluez looks in /etc/firmware/
+    ln -sf /usr/lib/firmware/ $INSTALL/etc/firmware
+
+    export CROSS_COMPILE=$OLD_CROSS_COMPILE
+
 }
