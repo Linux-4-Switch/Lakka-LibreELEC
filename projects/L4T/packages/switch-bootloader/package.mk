@@ -21,7 +21,7 @@
 PKG_NAME="switch-bootloader"
 PKG_VERSION="1.0"
 PKG_ARCH="any"
-PKG_DEPENDS_TARGET="switch-coreboot"
+PKG_DEPENDS_TARGET="switch-coreboot linux"
 PKG_TOOLCHAIN="make"
 
 PKG_IS_ADDON="no"

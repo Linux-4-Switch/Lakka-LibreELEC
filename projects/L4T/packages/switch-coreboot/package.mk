@@ -46,8 +46,7 @@ makeinstall_host() {
 }
 
 pre_make_host() {
-  sed -i -e "s|CONFIG_PAYLOAD_FILE=\"../u-boot/u-boot.elf\"|CONFIG_PAYLOAD_FILE=\"${BUILD}/switch-boot/u-boot.elf\"|" $PKG_BUILD/configs/nintendo_switch_defconfig
-  ls ../
+  sed -i -e "s|../switch-uboot/u-boot.elf|${BUILD}/switch-boot/u-boot.elf|" $PKG_BUILD/configs/nintendo_switch_defconfig
 }
 
 make_target() {
