@@ -19,12 +19,15 @@
 ################################################################################
 
 PKG_NAME="switch-u-boot"
-PKG_VERSION="ca582801"
+PKG_VERSION="f0f9f254"
+PKG_GIT_CLONE_BRANCH="linux-norebase"
 PKG_ARCH="any"
-PKG_DEPENDS_TARGET="toolchain gcc-linaro-aarch64-linux-gnu:host gcc-linaro-arm-linux-gnueabi:host Python Python:host swig:host"
-PKG_SITE="https://gitlab.com/switchroot/switch-uboot"
+PKG_DEPENDS_TARGET="toolchain gcc-linaro-aarch64-linux-gnu:host gcc-linaro-arm-linux-gnueabi:host Python2 Python2:host swig:host"
+PKG_SITE="https://gitlab.com/switchroot/switch-uboot.git"
 PKG_GIT_URL="$PKG_SITE"
+PKG_URL="$PKG_SITE"
 PKG_CLEAN="switch-coreboot"
+PKG_TOOLCHAIN="make"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"

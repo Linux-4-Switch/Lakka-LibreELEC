@@ -19,13 +19,15 @@
 ################################################################################
 
 PKG_NAME="switch-coreboot"
-PKG_VERSION="d30e346e"
+PKG_VERSION="438d5a39"
 PKG_ARCH="any"
 PKG_DEPENDS_HOST="gcc-linaro-aarch64-linux-gnu:host gcc-linaro-arm-linux-gnueabi:host zlib:host openssl:host"
 PKG_DEPENDS_TARGET="toolchain switch-coreboot:host switch-u-boot gcc-linaro-aarch64-linux-gnu:host gcc-linaro-arm-linux-gnueabi:host curl:host"
-PKG_SITE="https://gitlab.com/switchroot/coreboot-switch"
+PKG_SITE="https://gitlab.com/switchroot/switch-coreboot"
 PKG_GIT_URL="$PKG_SITE"
+PKG_URL="https://gitlab.com/switchroot/switch-coreboot.git"
 PKG_CLEAN="switch-bootloader"
+PKG_TOOLCHAIN="make"
 
 PKG_AUTORECONF="no"
 
@@ -45,6 +47,7 @@ makeinstall_host() {
 
 pre_make_host() {
   sed -i -e "s|CONFIG_PAYLOAD_FILE=\"../u-boot/u-boot.elf\"|CONFIG_PAYLOAD_FILE=\"${BUILD}/switch-boot/u-boot.elf\"|" $PKG_BUILD/configs/nintendo_switch_defconfig
+  ls ../
 }
 
 make_target() {

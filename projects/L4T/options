@@ -33,6 +33,10 @@
   # Additional kernel make parameters (for example to specify the u-boot loadaddress)
     KERNEL_MAKE_EXTRACMD="dtbs"
 
+    LINUX="custom"
+    KERNEL_VERSION="linux-rel32-rebase"
+    KERNEL_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$KERNEL_VERSION/l4t-kernel-4.9-$KERNEL_VERSION.tar.gz"
+
 ################################################################################
 # setup build defaults
 ################################################################################

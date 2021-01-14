@@ -121,7 +121,7 @@ configure_target() {
     CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-Os|"`
 
     # busybox fails to build with GOLD support enabled with binutils-2.25
-    strip_gold
+    #strip_gold
 
     LDFLAGS="$LDFLAGS -fwhole-program"
 
@@ -140,7 +140,7 @@ configure_init() {
     CFLAGS=`echo $CFLAGS | sed -e "s|-O.|-Os|"`
 
     # busybox fails to build with GOLD support enabled with binutils-2.25
-    strip_gold
+    #strip_gold
 
     LDFLAGS="$LDFLAGS -fwhole-program"
 
