@@ -39,10 +39,6 @@ makeinstall_target() {
   cp -PRv $BUILD/$PKG_NAME-$PKG_VERSION/boot_uart.scr $INSTALL/usr/share/bootloader/boot/boot_uart.scr
     cp -PRv $BUILD/$PKG_NAME-$PKG_VERSION/boot_usb.scr $INSTALL/usr/share/bootloader/boot/boot_usb.scr
   cp -PRv $BUILD/switch-boot/coreboot.rom $INSTALL/usr/share/bootloader/boot/coreboot.rom
-  if [ "$DEVICE" = "Switch" ]; then
-    cp $(kernel_path)/arch/arm64/boot/dts/tegra210-icosa.dtb $(kernel_path)/arch/arm64/boot/dts/nvidia/tegra210-nintendo-switch.dtb
-  fi
-  cp -PRv $(kernel_path)/arch/arm64/boot/dts/nvidia/tegra210-nintendo-switch.dtb $INSTALL/usr/share/bootloader/boot/tegra210-nintendo-switch.dtb
 }
 
 make_target() {

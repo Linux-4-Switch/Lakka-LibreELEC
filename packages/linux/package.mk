@@ -44,6 +44,10 @@ case "$LINUX" in
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v5.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
+  switch)
+    PKG_VERSION="linux-rel32-rebase"
+    PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$PKG_VERSION/l4t-kernel-4.9-$PKG_VERSION.tar.gz"
+    ;;
   *)
     PKG_VERSION="5.1.18"
     PKG_SHA256="6013e7dcf59d7c1b168d8edce3dbd61ce340ff289541f920dbd0958bef98f36a"
@@ -51,10 +55,6 @@ case "$LINUX" in
     PKG_PATCH_DIRS="default"
     ;;
 esac
-
-if [ "$PROJECT" = "Switch" ]; then
-  PKG_SOURCE_DIR="linux-$PKG_VERSION"
-fi
 
 PKG_KERNEL_CFG_FILE=$(kernel_config_path) || die
 
@@ -76,7 +76,7 @@ elif [ "$TARGET_ARCH" = "arm" -a "$DEVICE" = "iMX6" ]; then
 fi
 
 if [ "$TARGET_KERNEL_ARCH" = "arm64" -a "$TARGET_ARCH" = "arm" ]; then
-  if [ "$PROJECT" = "Switch" ]; then
+  if [ "$DEVICE" = "Switch" ]; then
     PKG_DEPENDS_HOST="$PKG_DEPENDS_HOST gcc-linaro-aarch64-linux-gnu:host"
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-linux-gnu:host"
     export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
@@ -94,7 +94,7 @@ if [ "$TARGET_KERNEL_ARCH" = "arm64" -a "$TARGET_ARCH" = "arm" ]; then
   fi
 fi
 
-if [ "$PROJECT" = "Switch" ]; then
+if [ "$DEVICE" = "Switch" ]; then
     PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kernel-firmware openssl:host"
     export C_INCLUDE_PATH="$TOOLCHAIN/include:$C_INCLUDE_PATH"
     export LIBRARY_PATH="$TOOLCHAIN/lib:$LIBRARY_PATH"
@@ -176,8 +176,8 @@ makeinstall_host() {
       INSTALL_HDR_PATH=dest \
       headers_install
   fi
-  mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -R dest/include/* $SYSROOT_PREFIX/usr/include
+  mkdir -p $BUILD/.sysroot/usr/include
+    cp -r dest/include/* $BUILD/.sysroot/usr/include
 }
 
 pre_make_target() {
@@ -203,7 +203,7 @@ pre_make_target() {
     sed -i -e "/CONFIG_EXTRA_FIRMWARE_DIR/d" -e "/CONFIG_EXTRA_FIRMWARE=.../a CONFIG_EXTRA_FIRMWARE_DIR=\"external-firmware\"" $PKG_BUILD/.config
   fi
 
-  if [ "$PROJECT" = "Switch" ]; then
+  if [ "$DEVICE" = "Switch" ]; then
     mkdir -p $PKG_BUILD/external-firmware
     cp -a $(get_build_dir kernel-firmware)/{nvidia,brcm} $PKG_BUILD/external-firmware
 
@@ -212,6 +212,11 @@ pre_make_target() {
   fi
 
   kernel_make olddefconfig
+
+  if [ "$DEVICE" = "Switch" ]; then
+    kernel_make prepare
+    kernel_make modules_prepare
+  fi
 
   # regdb (backward compatability with pre-4.15 kernels)
   if grep -q ^CONFIG_CFG80211_INTERNAL_REGDB= $PKG_BUILD/.config ; then
