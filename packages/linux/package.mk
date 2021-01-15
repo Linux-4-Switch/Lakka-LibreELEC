@@ -83,16 +83,6 @@ elif [ "$TARGET_ARCH" = "aarch64" ] && [ "$DEVICE" = "Switch" ]; then
   OLD_CROSS_COMPILE=$CROSS_COMPILE
   export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
   PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
- 
-  ## GCC-9 fix - The Set the new GCC-9 errors to warnings
-  ## Check if known at the first
-  GCC9_CFLAGS=" -Wno-error=packed-not-aligned -Wno-error=missing-attributes -Wno-error=address-of-packed-member -Wno-error=sizeof-pointer-memaccess -Wno-error=tautological-compare -Wno-error=maybe-uninitialized"
-  GCC9_ERROR="$(LC_ALL=C gcc -E ${GCC9_CFLAGS} - < /dev/null 2>&1 >/dev/null| grep error)"
-  if [ -z "$GCC9_ERROR" ]; then
-    export KCFLAGS+=${GCC9_CFLAGS}
-    echo "Use KCFLAGS=\"$GCC9_CFLAGS\" for GCC-9 compatibility"
-  fi
-
 fi
 
 if [[ "$KERNEL_TARGET" = uImage* ]]; then
