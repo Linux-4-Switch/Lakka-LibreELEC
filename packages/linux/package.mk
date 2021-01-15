@@ -47,7 +47,9 @@ case "$LINUX" in
   switch)
     PKG_VERSION="linux-rel32-rebase"
     PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$PKG_VERSION/l4t-kernel-4.9-$PKG_VERSION.tar.gz"
+    PKG_PATCH_DIRS=""
     ;;
+
   *)
     PKG_VERSION="5.1.18"
     PKG_SHA256="6013e7dcf59d7c1b168d8edce3dbd61ce340ff289541f920dbd0958bef98f36a"
@@ -73,31 +75,24 @@ if [ "$TARGET_ARCH" = "x86_64" -o "$TARGET_ARCH" = "i386" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET intel-ucode:host kernel-firmware elfutils:host pciutils"
 elif [ "$TARGET_ARCH" = "arm" -a "$DEVICE" = "iMX6" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kernel-firmware"
-fi
-
-if [ "$TARGET_KERNEL_ARCH" = "arm64" -a "$TARGET_ARCH" = "arm" ]; then
-  if [ "$DEVICE" = "Switch" ]; then
-    PKG_DEPENDS_HOST="$PKG_DEPENDS_HOST gcc-linaro-aarch64-linux-gnu:host"
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-linux-gnu:host"
-    export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
-    TARGET_PREFIX=aarch64-linux-gnu-
-    OLD_CROSS_COMPILE=$CROSS_COMPILE
-    export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
-    PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
-  else
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-elf:host"
-    export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-elf/bin/:$PATH
-    TARGET_PREFIX=aarch64-elf-
-    OLD_CROSS_COMPILE=$CROSS_COMPILE
-    export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
-    PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
+elif [ "$TARGET_ARCH" = "aarch64" ] && [ "$DEVICE" = "Switch" ]; then
+  PKG_DEPENDS_HOST="$PKG_DEPENDS_HOST gcc-linaro-aarch64-linux-gnu:host"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET gcc-linaro-aarch64-linux-gnu:host"
+  export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
+  TARGET_PREFIX=aarch64-linux-gnu-
+  OLD_CROSS_COMPILE=$CROSS_COMPILE
+  export CROSS_COMPILE=$TARGET_PREFIX # necessary for Linux 5
+  PKG_MAKE_OPTS_HOST="ARCH=$TARGET_ARCH headers_check"
+ 
+  ## GCC-9 fix - The Set the new GCC-9 errors to warnings
+  ## Check if known at the first
+  GCC9_CFLAGS=" -Wno-error=packed-not-aligned -Wno-error=missing-attributes -Wno-error=address-of-packed-member -Wno-error=sizeof-pointer-memaccess -Wno-error=tautological-compare -Wno-error=maybe-uninitialized"
+  GCC9_ERROR="$(LC_ALL=C gcc -E ${GCC9_CFLAGS} - < /dev/null 2>&1 >/dev/null| grep error)"
+  if [ -z "$GCC9_ERROR" ]; then
+    export KCFLAGS+=${GCC9_CFLAGS}
+    echo "Use KCFLAGS=\"$GCC9_CFLAGS\" for GCC-9 compatibility"
   fi
-fi
 
-if [ "$DEVICE" = "Switch" ]; then
-    PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET kernel-firmware openssl:host"
-    export C_INCLUDE_PATH="$TOOLCHAIN/include:$C_INCLUDE_PATH"
-    export LIBRARY_PATH="$TOOLCHAIN/lib:$LIBRARY_PATH"
 fi
 
 if [[ "$KERNEL_TARGET" = uImage* ]]; then
@@ -111,7 +106,7 @@ post_patch() {
   sed -i -e "/CONFIG_INITRAMFS_ROOT_UID/d" -e "/CONFIG_INITRAMFS_ROOT_GID/d" -e "/CONFIG_INITRAMFS_SOURCE=.../a CONFIG_INITRAMFS_ROOT_UID=0\nCONFIG_INITRAMFS_ROOT_GID=0" $PKG_BUILD/.config
 
   # set default hostname based on $DISTRONAME
-    sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
+  sed -i -e "s|@DISTRONAME@|$DISTRONAME|g" $PKG_BUILD/.config
 
   # disable swap support if not enabled
   if [ ! "$SWAP_SUPPORT" = yes ]; then
@@ -149,22 +144,49 @@ post_patch() {
 
   #host gcc 10 build issue
   sed -i '/YYLTYPE yylloc/d' $PKG_BUILD/scripts/dtc/dtc-lexer.l
+
 }
 
 make_host() {
-  make \
-    ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
-    HOSTCC="$TOOLCHAIN/bin/host-gcc" \
-    HOSTCXX="$TOOLCHAIN/bin/host-g++" \
-    HOSTCFLAGS="$HOST_CFLAGS" \
-    HOSTCXXFLAGS="$HOST_CXXFLAGS" \
-    HOSTLDFLAGS="$HOST_LDFLAGS" \
-    headers_check
+  if [ "$DEVICE" = "Switch" ]; then
+    cp arch/arm64/configs/tegra_linux_defconfig .config
+    make \
+      ARCH=arm64 \
+      CROSS_COMPILE=$TARGET_PREFIX \
+      olddefconfig
+     make \
+       ARCH=arm64 \
+       CROSS_COMPILE=$TARGET_PREFIX \
+       prepare
+     make \
+       ARCH=arm64 \
+       CROSS_COMPILE=$TARGET_PREFIX \
+       modules_prepare
+     make \
+       ARCH=arm64 \
+       headers_check
+  else
+    make \
+      ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
+      HOSTCC="$TOOLCHAIN/bin/host-gcc" \
+      HOSTCXX="$TOOLCHAIN/bin/host-g++" \
+      HOSTCFLAGS="$HOST_CFLAGS" \
+      HOSTCXXFLAGS="$HOST_CXXFLAGS" \
+      HOSTLDFLAGS="$HOST_LDFLAGS" \
+      headers_check
+  fi
 }
 
 makeinstall_host() {
-  if [ $TARGET_KERNEL_ARCH = "arm64" ] && [ $TARGET_ARCH == "arm"  ]; then
-    make ARCH=$TARGET_ARCH INSTALL_HDR_PATH=dest headers_install
+  if [ "$DEVICE" = "Switch" ]; then
+    make \
+      ARCH=arm64 \
+      CROSS_COMPILE=$TARGET_PREFIX \
+      INSTALL_HDR_PATH=dest \
+      headers_install
+
+      sed -i 's|#ifdef CONFIG_64BIT||g' dest/include/asm/sigcontext.h
+      sed -i 's|#endif \/\* CONFIG_64BIT \*\/||g' dest/include/asm/sigcontext.h
   else
     make \
       ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
@@ -176,8 +198,8 @@ makeinstall_host() {
       INSTALL_HDR_PATH=dest \
       headers_install
   fi
-  mkdir -p $BUILD/.sysroot/usr/include
-    cp -r dest/include/* $BUILD/.sysroot/usr/include
+  mkdir -p $SYSROOT_PREFIX/usr/include
+    cp -R dest/include/* $SYSROOT_PREFIX/usr/include
 }
 
 pre_make_target() {
@@ -204,19 +226,11 @@ pre_make_target() {
   fi
 
   if [ "$DEVICE" = "Switch" ]; then
-    mkdir -p $PKG_BUILD/external-firmware
-    cp -a $(get_build_dir kernel-firmware)/{nvidia,brcm} $PKG_BUILD/external-firmware
-
-    FW_LIST="$(find $PKG_BUILD/external-firmware \( -type f -o -type l \) \( -iname '*.bin' -o -iname '*.txt' -o -iname '*.hcd' \) | sed 's|.*external-firmware/||' | sort | xargs)"
-    sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|CONFIG_EXTRA_FIRMWARE=\"${FW_LIST}\"|" $PKG_BUILD/.config
+    sed -i "s|CONFIG_EXTRA_FIRMWARE_DIR=.*|# CONFIG_EXTRA_FIRMWARE_DIR is not set|" $PKG_BUILD/.config
+    sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|# CONFIG_EXTRA_FIRMWARE is not set|" $PKG_BUILD/.config
   fi
 
   kernel_make olddefconfig
-
-  if [ "$DEVICE" = "Switch" ]; then
-    kernel_make prepare
-    kernel_make modules_prepare
-  fi
 
   # regdb (backward compatability with pre-4.15 kernels)
   if grep -q ^CONFIG_CFG80211_INTERNAL_REGDB= $PKG_BUILD/.config ; then
@@ -339,10 +353,4 @@ post_install() {
     if grep -q ^CONFIG_CFG80211_REQUIRE_SIGNED_REGDB= $PKG_BUILD/.config; then
       cp $(get_build_dir wireless-regdb)/regulatory.db{,.p7s} $INSTALL/$(get_full_firmware_dir)
     fi
-
-  # bluez looks in /etc/firmware/
-    ln -sf /usr/lib/firmware/ $INSTALL/etc/firmware
-
-    export CROSS_COMPILE=$OLD_CROSS_COMPILE
-
 }
