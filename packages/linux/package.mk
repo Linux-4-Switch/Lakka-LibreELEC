@@ -45,7 +45,7 @@ case "$LINUX" in
     PKG_PATCH_DIRS="default"
     ;;
   switch)
-    PKG_VERSION="linux-rel32-rebase"
+    PKG_VERSION="switch"
     PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$PKG_VERSION/l4t-kernel-4.9-$PKG_VERSION.tar.gz"
     PKG_PATCH_DIRS=""
     ;;
