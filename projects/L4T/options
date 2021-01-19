@@ -10,19 +10,12 @@
         TARGET_CPU_FLAGS="+crypto+crc+fp+simd"
         TARGET_FEATURES="64bit neon"
         ;;
-      arm)
-        TARGET_KERNEL_ARCH="arm64"
-        TARGET_PATCH_ARCH="aarch64"
-        TARGET_FLOAT="hard"
-        TARGET_CPU="cortex-a57"
-        TARGET_CPU_FLAGS="+crypto+crc+fp+simd"
-        TARGET_FPU="crypto-neon-fp-armv8"
-        TARGET_FEATURES="32bit neon"
+      *)
         ;;
     esac
   
   # Bootloader to use (syslinux / u-boot / bcm2835-bootloader)
-    BOOTLOADER="switch-bootloader" # this is a fake bootloader since coreboot and u-boot are sideloaded
+    BOOTLOADER="u-boot" 
     
     # Kernel target for u-boot (default 'uImage' if BOOTLOADER=u-boot) (uImage / zImage)	
     KERNEL_TARGET="Image"
@@ -104,3 +97,10 @@
 
   # override some playlist core assignation
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//parallel_n64/mupen64plus}"
+
+#disable arm target
+if [ "$ARCH" == "arm" ]; then
+    echo "Error: 32bit ARM arch is not supported by L4T"
+    exit 1
+fi
+
