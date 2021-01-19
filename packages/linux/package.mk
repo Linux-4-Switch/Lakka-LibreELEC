@@ -214,14 +214,16 @@ pre_make_target() {
     sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|CONFIG_EXTRA_FIRMWARE=\"${FW_LIST}\"|" $PKG_BUILD/.config
     sed -i -e "/CONFIG_EXTRA_FIRMWARE_DIR/d" -e "/CONFIG_EXTRA_FIRMWARE=.../a CONFIG_EXTRA_FIRMWARE_DIR=\"external-firmware\"" $PKG_BUILD/.config
   fi
-
   if [ "$DEVICE" = "Switch" ]; then
-    sed -i "s|CONFIG_EXTRA_FIRMWARE_DIR=.*|# CONFIG_EXTRA_FIRMWARE_DIR is not set|" $PKG_BUILD/.config
-    sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|# CONFIG_EXTRA_FIRMWARE is not set|" $PKG_BUILD/.config
+    kernel_make clean
+    cp arch/arm64/configs/tegra_linux_defconfig .config
+    kernel_make olddefconfig
+    kernel_make prepare
+    kernel_make modules_prepare
+  else
+    kernel_make olddefconfig
   fi
-
-  kernel_make olddefconfig
-
+  
   # regdb (backward compatability with pre-4.15 kernels)
   if grep -q ^CONFIG_CFG80211_INTERNAL_REGDB= $PKG_BUILD/.config ; then
     cp $(get_build_dir wireless-regdb)/db.txt $PKG_BUILD/net/wireless/db.txt
@@ -238,7 +240,9 @@ make_target() {
     KERNEL_UIMAGE_TARGET="$KERNEL_TARGET"
     KERNEL_TARGET="${KERNEL_TARGET/uImage/Image}"
   fi
-
+  if [ "$DEVICE" = "Switch" ]; then
+     export KCFLAGS+=-Wno-error=sizeof-pointer-memaccess
+  fi
   kernel_make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD modules
 
   if [ "$PKG_BUILD_PERF" = "yes" ] ; then
@@ -323,7 +327,7 @@ makeinstall_target() {
     # drivers and decent USB support) as these are not required by LibreELEC
     if [ "$PROJECT" = "RPi" -a "$ARCH" = "aarch64" ]; then
       cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/broadcom/*.dtb $INSTALL/usr/share/bootloader
-    else
+    else  
       cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/*.dtb $INSTALL/usr/share/bootloader
     fi
     rm -f $INSTALL/usr/share/bootloader/bcm283*.dtb
