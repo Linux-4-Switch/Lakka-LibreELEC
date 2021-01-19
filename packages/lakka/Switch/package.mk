@@ -32,7 +32,7 @@ PKG_SHORTDESC="Lakka metapackage for Switch"
 PKG_LONGDESC=""
 
 if [ "$DEVICE" = "L4T" ]; then
-  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr"
+  PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr joycond"
 fi
 
 PKG_IS_ADDON="no"
