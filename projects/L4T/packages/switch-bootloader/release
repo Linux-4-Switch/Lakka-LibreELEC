@@ -5,7 +5,7 @@
 mkdir -p $RELEASE_DIR/lakka/boot
 
 cp -PR $INSTALL/usr/share/bootloader/boot/splash.bmp $RELEASE_DIR/lakka/boot
-cp -PR $INSTALL/usr/share/bootloader/boot/tegra210-nintendo-switch.dtb $RELEASE_DIR/lakka/boot
+#cp -PR $INSTALL/usr/share/bootloader/boot/tegra210-nintendo-switch.dtb $RELEASE_DIR/lakka/boot
 cp -PR $INSTALL/usr/share/bootloader/boot/boot.scr $RELEASE_DIR/lakka/boot
 cp -PR $INSTALL/usr/share/bootloader/boot/boot_uart.scr $RELEASE_DIR/lakka/boot
 cp -PR $INSTALL/usr/share/bootloader/boot/boot_usb.scr $RELEASE_DIR/lakka/boot
