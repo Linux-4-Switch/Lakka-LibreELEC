@@ -2,6 +2,10 @@
 OPENGL="mesa"
 VULKAN="mesa"
 
+LINUX="switch"
+KERNEL_VERSION="l4t-rel32.4.4"
+KERNEL_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$KERNEL_VERSION/l4t-kernel-4.9-$KERNEL_VERSION.tar.gz"
+
 #disable arm target
 if [ "$ARCH" == "arm" ]; then
     echo "Error: 32bit ARM arch is not supported by L4T"
