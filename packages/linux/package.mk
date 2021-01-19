@@ -211,7 +211,6 @@ pre_make_target() {
     sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|CONFIG_EXTRA_FIRMWARE=\"${FW_LIST}\"|" $PKG_BUILD/.config
     sed -i -e "/CONFIG_EXTRA_FIRMWARE_DIR/d" -e "/CONFIG_EXTRA_FIRMWARE=.../a CONFIG_EXTRA_FIRMWARE_DIR=\"external-firmware\"" $PKG_BUILD/.config
   fi
-
   if [ "$DEVICE" = "Switch" ]; then
     kernel_make clean
     cp arch/arm64/configs/tegra_linux_defconfig .config
@@ -327,7 +326,7 @@ makeinstall_target() {
     # drivers and decent USB support) as these are not required by LibreELEC
     if [ "$PROJECT" = "RPi" -a "$ARCH" = "aarch64" ]; then
       cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/broadcom/*.dtb $INSTALL/usr/share/bootloader
-    else
+    else  
       cp -p arch/$TARGET_KERNEL_ARCH/boot/dts/*.dtb $INSTALL/usr/share/bootloader
     fi
     rm -f $INSTALL/usr/share/bootloader/bcm283*.dtb
