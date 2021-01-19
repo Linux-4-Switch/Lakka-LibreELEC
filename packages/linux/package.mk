@@ -174,9 +174,6 @@ makeinstall_host() {
       CROSS_COMPILE=$TARGET_PREFIX \
       INSTALL_HDR_PATH=dest \
       headers_install
-
-      sed -i 's|#ifdef CONFIG_64BIT||g' dest/include/asm/sigcontext.h
-      sed -i 's|#endif \/\* CONFIG_64BIT \*\/||g' dest/include/asm/sigcontext.h
   else
     make \
       ARCH=${HEADERS_ARCH:-$TARGET_KERNEL_ARCH} \
@@ -216,11 +213,14 @@ pre_make_target() {
   fi
 
   if [ "$DEVICE" = "Switch" ]; then
-    sed -i "s|CONFIG_EXTRA_FIRMWARE_DIR=.*|# CONFIG_EXTRA_FIRMWARE_DIR is not set|" $PKG_BUILD/.config
-    sed -i "s|CONFIG_EXTRA_FIRMWARE=.*|# CONFIG_EXTRA_FIRMWARE is not set|" $PKG_BUILD/.config
+    kernel_make clean
+    cp arch/arm64/configs/tegra_linux_defconfig .config
+    kernel_make olddefconfig
+    kernel_make prepare
+    kernel_make modules_prepare
+  else
+    kernel_make olddefconfig
   fi
-
-  kernel_make olddefconfig
 
   # regdb (backward compatability with pre-4.15 kernels)
   if grep -q ^CONFIG_CFG80211_INTERNAL_REGDB= $PKG_BUILD/.config ; then
@@ -237,6 +237,10 @@ make_target() {
     fi
     KERNEL_UIMAGE_TARGET="$KERNEL_TARGET"
     KERNEL_TARGET="${KERNEL_TARGET/uImage/Image}"
+  fi
+  
+  if [ "$DEVICE" = "Switch" ]; then
+     export KCFLAGS+="-Wno-error=sizeof-pointer-memaccess -Wno-error=missing-attributes -Wno-error=stringop-truncation -Wno-error=stringop-overflow= -Wno-error=address-of-packed-member -Wno-error=tautological-compare"
   fi
 
   kernel_make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD modules
