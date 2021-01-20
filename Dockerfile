@@ -18,7 +18,7 @@
 #    PROJECT=OdroidXU3 ARCH=arm scripts/build ppsspp
 #
 
-FROM ubuntu:focal
+FROM ubuntu:bionic
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -26,7 +26,7 @@ RUN apt-get update \
 	&& apt-get install -y \
 		liblz4-tool \
 		python3 \
-		python2-minimal \
+		python \
 		default-jre \
 		sudo \
 		bash \
@@ -39,7 +39,7 @@ RUN apt-get update \
 		g++ \
 		gawk \
 		gcc \
-		git-core \
+		git \
 		gperf \
 		gzip \
 		libjson-perl \
