@@ -64,13 +64,13 @@
     GRAPHIC_DRIVERS="nouveau tegra"
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap / libamcodec)
-    KODIPLAYER_DRIVER="libamcodec"
+    KODIPLAYER_DRIVER="mesa"
 
   # Modules to install in initramfs for early boot
     INITRAMFS_MODULES="font softcursor bitblit fbcon"
 
   # OEM packages for OEM's (yes / no)
-    OEM_SUPPORT="no"
+    OEM_SUPPORT="yes"
 
   # additional drivers to install:
   # for a list of additinoal drivers see packages/linux-drivers
@@ -98,9 +98,14 @@
   # override some playlist core assignation
     RA_PLAYLIST_CORES="${RA_PLAYLIST_CORES//parallel_n64/mupen64plus}"
 
-#disable arm target
-if [ "$ARCH" == "arm" ]; then
-    echo "Error: 32bit ARM arch is not supported by L4T"
-    exit 1
-fi
+    if [ "$DISTRO" = "Lakka" ]; then
+      DRIVER_ADDONS=""
+    fi
+
+  # disable arm target
+
+    if [ "$ARCH" == "arm" ]; then
+      echo "Error: 32bit ARM arch is not supported by L4T"
+      exit 1
+    fi
 

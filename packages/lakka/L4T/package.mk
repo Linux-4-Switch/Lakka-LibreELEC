@@ -25,12 +25,27 @@ PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/lakkatv/Lakka"
 PKG_URL=""
-PKG_DEPENDS_TARGET="retroarch wii-u-gc-adapter"
+PKG_DEPENDS_TARGET="freetype libdrm pixman $OPENGL libepoxy glu retroarch $LIBRETRO_CORES alsa-plugins libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr"
 PKG_PRIORITY="optional"
 PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for Generic"
+PKG_SHORTDESC="Lakka metapackage for Switch"
 PKG_LONGDESC=""
+
+if [ "$DEVICE" == "Switch" ]; then
+  PKG_DEPENDS_TARGET+=" switch-gpu-profile switch-cpu-profile joycond"
+fi
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
+post_install() {
+  enable_service xorg-configure-switch.service
+  enable_service var-bluetoothconfig.mount
+  enable_service switch-set-mac-address.service
+  # enable_service switch-wifi-fix.service
+  
+  mkdir -p $INSTALL/usr/bin
+  cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
+  cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
+}
 

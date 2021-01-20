@@ -1,6 +1,6 @@
 #we use mesa for includes and headers, but replace the binaries by the nvidia blobs
 OPENGL="mesa"
-VULKAN="mesa"
+VULKAN="no"
 
 LINUX="switch"
 KERNEL_VERSION="l4t-rel32.4.4"
