@@ -214,3 +214,4 @@ rmmod btbcm
 rmmod brcmfmac
 modprobe btbcm
 modprobe brcmfmac
+modprobe ledtrig-timer
