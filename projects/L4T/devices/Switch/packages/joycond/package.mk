@@ -19,26 +19,18 @@
 ################################################################################
 
 PKG_NAME="joycond"
-PKG_VERSION=""
+PKG_VERSION="1"
 PKG_ARCH="any"
-PKG_DEPENDS_TARGET="toolchain gcc-linaro-aarch64-linux-gnu:host"
+PKG_DEPENDS_TARGET="toolchain cmake:host gcc-linaro-aarch64-linux-gnu:host"
 PKG_SITE="https://github.com/DanielOgorchock/joycond"
-PKG_GIT_URL="$PKG_SITE"
+PKG_URL="https://github.com/DanielOgorchock/joycond/archive/master.tar.gz"
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+PKG_TOOLCHAIN="cmake-make"
 
-make_target() {
-  export PATH=$TOOLCHAIN/lib/gcc-linaro-aarch64-linux-gnu/bin/:$PATH
-  OLD_CROSS_COMPILE=$CROSS_COMPILE
-  CROSS_COMPILE=aarch64-linux-gnu-
-  cmake .
-  ARCH=arm64 make
-  export CROSS_COMPILE=$OLD_CROSS_COMPILE
-}
-
-makeinstall_target() {
-  make install INSTALL_PREFIX=$INSTALL
+post_makeinstall_target() {
+  rm -r $INSTALL/etc/modules-load.d
+  mkdir -p $INSTALL/etc/systemd/system/multi-user.target.wants/ 
   ln -s $INSTALL/etc/systemd/system/joycond.service $INSTALL/etc/systemd/system/multi-user.target.wants/joycond.service
-  
 }
