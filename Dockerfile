@@ -18,7 +18,7 @@
 #    PROJECT=OdroidXU3 ARCH=arm scripts/build ppsspp
 #
 
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
@@ -26,7 +26,7 @@ RUN apt-get update \
 	&& apt-get install -y \
 		liblz4-tool \
 		python3 \
-		python \
+		python2-minimal \
 		default-jre \
 		sudo \
 		bash \
@@ -36,10 +36,10 @@ RUN apt-get update \
 		build-essential \
 		bzip2 \
 		diffutils \
-		g++ \
+		g++-7 \
 		gawk \
-		gcc \
-		git \
+		gcc-7 \
+		git-core \
 		gperf \
 		gzip \
 		libjson-perl \
@@ -62,7 +62,11 @@ RUN apt-get update \
 		zip \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN ln -sfn /usr/bin/python2 /usr/bin/python
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
+RUN update-alternatives --auto gcc
+RUN update-alternatives --auto g++
+RUN ln -s /usr/bin/python2 /usr/bin/python
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 ubuntu
 RUN echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-cloudimg-ubuntu
 USER ubuntu
