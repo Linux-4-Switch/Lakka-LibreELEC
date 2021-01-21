@@ -254,6 +254,9 @@ pre_make_target() {
         [ -f "$f" ] && cp -v $f $PKG_BUILD/arch/$TARGET_KERNEL_ARCH/boot/dts/overlays || true
       done
     fi
+    echo CONFIG_SQUASHFS_FILE_CACHE=y >>.config
+    echo CONFIG_SQUASHFS_DECOMP_SINGLE=y >> .config
+    echo CONFIG_SQUASHFS_FRAGMENT_CACHE_SIZE=3 >> .config
     echo CONFIG_SQUASHFS_ZLIB=y >> .config
     echo CONFIG_SQUASHFS_ZSTD=y >> .config
     echo CONFIG_SQUASHFS_XATTR=y >> .config
