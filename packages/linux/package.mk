@@ -254,7 +254,9 @@ pre_make_target() {
         [ -f "$f" ] && cp -v $f $PKG_BUILD/arch/$TARGET_KERNEL_ARCH/boot/dts/overlays || true
       done
     fi
-
+    echo CONFIG_SQUASHFS_ZLIB=y >> .config
+    echo CONFIG_SQUASHFS_ZSTD=y >> .config
+    echo CONFIG_SQUASHFS_XATTR=y >> .config
     kernel_make olddefconfig
     kernel_make prepare
     kernel_make modules_prepare
