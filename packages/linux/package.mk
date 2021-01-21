@@ -214,6 +214,8 @@ pre_make_target() {
   if [ "$DEVICE" = "Switch" ]; then
     kernel_make clean
     cp arch/arm64/configs/tegra_linux_defconfig .config
+    echo CONFIG_INITRAMFS_SOURCE="" >> .config
+    echo CONFIG_INITRAMFS_ROOT_GID="" >> .config
     #repatch defconfig for build *FIXME
     sed -i -e "s|^CONFIG_INITRAMFS_SOURCE=.*$|CONFIG_INITRAMFS_SOURCE=\"$(kernel_initramfs_confs) $BUILD/initramfs\"|" $PKG_BUILD/.config
     sed -i -e "/CONFIG_INITRAMFS_ROOT_UID/d" -e "/CONFIG_INITRAMFS_ROOT_GID/d" -e "/CONFIG_INITRAMFS_SOURCE=.../a CONFIG_INITRAMFS_ROOT_UID=0\nCONFIG_INITRAMFS_ROOT_GID=0" $PKG_BUILD/.config
