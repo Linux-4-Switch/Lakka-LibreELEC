@@ -257,6 +257,13 @@ pre_make_target() {
     echo CONFIG_SQUASHFS_ZLIB=y >> .config
     echo CONFIG_SQUASHFS_ZSTD=y >> .config
     echo CONFIG_SQUASHFS_XATTR=y >> .config
+    echo CONFIG_RD_GZIP=y >> .config
+    echo CONFIG_RD_BZIP2=y >> .config
+    echo CONFIG_RD_LZMA=y >> .config
+    echo CONFIG_RD_XZ=y >> .config
+    echo CONFIG_RD_LZO=y >> .config
+    echo CONFIG_RD_LZ4=y >> .config
+    
     kernel_make olddefconfig
     kernel_make prepare
     kernel_make modules_prepare
