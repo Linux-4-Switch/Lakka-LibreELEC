@@ -61,7 +61,7 @@ RUN apt-get update \
 		zip \
 	&& rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/bin/python2 /usr/bin/python
+RUN ln -sfn /usr/bin/python2 /usr/bin/python
 RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 ubuntu
 RUN echo "ubuntu ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-cloudimg-ubuntu
 USER ubuntu
