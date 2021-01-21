@@ -58,6 +58,7 @@ RUN apt-get update \
 		xfonts-utils \
 		xsltproc \
 		xz-utils \
+		xxd \
 		zip \
 	&& rm -rf /var/lib/apt/lists/*
 
