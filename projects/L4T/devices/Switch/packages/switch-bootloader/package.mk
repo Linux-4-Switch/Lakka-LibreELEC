@@ -32,7 +32,7 @@ makeinstall_target() {
   mkimage -A arm -T script -O linux -d $PKG_DIR/assets/boot.txt $BUILD/$PKG_NAME-$PKG_VERSION/boot.scr
 
   cp -PRv $PKG_DIR/assets/splash.bmp $INSTALL/usr/share/bootloader/boot/splash.bmp
-  cp -PRv $PKG_DIR/assets/00-Lakka.ini $INSTALL/usr/share/bootloader/boot/00-Lakka.ini
+  cp -PRv $PKG_DIR/assets/00-Lakka.ini $INSTALL/usr/share/bootloader/boot/Lakka.ini
   cp -PRv $BUILD/$PKG_NAME-$PKG_VERSION/boot.scr $INSTALL/usr/share/bootloader/boot/boot.scr
   cp -PRv $BUILD/switch-boot/coreboot.rom $INSTALL/usr/share/bootloader/boot/coreboot.rom
 }
