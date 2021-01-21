@@ -7,7 +7,7 @@ index 5c469a2..1641d27 100644
  	BOOTENV_SHARED_UBIFS \
  	BOOTENV_SHARED_EFI \
 -	"boot_prefixes=/ /switchroot/ubuntu/\0" \
-+	"boot_prefixes=/ /lakka/boot/\0" \
++	"boot_prefixes=/ /switchroot/lakka/\0" \
  	"boot_scripts=boot.scr.uimg boot.scr\0" \
  	"boot_script_dhcp=boot.scr.uimg\0" \
  	BOOTENV_BOOT_TARGETS \
