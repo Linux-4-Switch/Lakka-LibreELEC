@@ -1,6 +1,6 @@
-load mmc 1:1 0x83000000 switchroot/lakka/KERNEL
-load mmc 1:1 0x8d000000 switchroot/lakka/tegra210-icosa.dtb
-setenv bootargs 'rootwait ro vpr_resize pmc_reboot2payload.enable=1 access=m2 pmc_reboot2payload.enabled=1 pmc_reboot2payload.reboot_action=bootloader pmc_reboot2payload.default_payload=reboot_payload.bin pmc_reboot2payload.hekate_config_id=SWR-LAK net.ifnames=0 nvdec_enabled=0 tegra_fbmem=0x0@0x1 consoleblank=0 fbcon=rotate:3 '
+load mmc 1:1 0x83000000 lakka/KERNEL
+load mmc 1:1 0x8d000000 lakka/tegra210-icosa.dtb
+setenv bootargs 'boot=/dev/mmvblk0p1 ro vpr_resize pmc_reboot2payload.enable=1 access=m2 pmc_reboot2payload.enabled=1 pmc_reboot2payload.reboot_action=bootloader pmc_reboot2payload.default_payload=reboot_payload.bin pmc_reboot2payload.hekate_config_id=SWR-LAK net.ifnames=0 nvdec_enabled=0 tegra_fbmem=0x0@0x1 consoleblank=0 fbcon=rotate:3 '
 usb reset
 booti 0x83000000 - 0x8d000000
 
