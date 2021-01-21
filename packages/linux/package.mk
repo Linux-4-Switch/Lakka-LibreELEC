@@ -266,6 +266,12 @@ pre_make_target() {
     echo CONFIG_RD_XZ=y >> .config
     echo CONFIG_RD_LZO=y >> .config
     echo CONFIG_RD_LZ4=y >> .config
+    echo CONFIG_DECOMPRESS_GZIP=y >> .config
+    echo CONFIG_DECOMPRESS_BZIP2=y >> .config
+    echo CONFIG_DECOMPRESS_LZMA=y >> .config
+    echo CONFIG_DECOMPRESS_XZ=y >> .config
+    echo CONFIG_DECOMPRESS_LZO=y >> .config
+    echo CONFIG_DECOMPRESS_LZ4=y >> .config
     
     kernel_make olddefconfig
     kernel_make prepare
