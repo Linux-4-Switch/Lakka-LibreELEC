@@ -1112,7 +1112,6 @@ for BOOT_STEP in \
     load_splash \
     mount_sysroot \
     mount_storage \
-    check_update \
     prepare_sysroot; do
   $BOOT_STEP
   [ -n "$DEBUG" ] && break_after $BOOT_STEP
