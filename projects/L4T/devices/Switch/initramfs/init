@@ -34,6 +34,8 @@ UPDATE_SYSTEM="lakka/SYSTEM"
 IMAGE_KERNEL="lakka/KERNEL"
 IMAGE_SYSTEM="lakka/SYSTEM"
 
+SPLASH="no"
+
 BOOT_STEP="start"
 MD5_FAILED="0"
 RUN_FSCK="yes"
@@ -111,7 +113,7 @@ mount_common() {
   for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
     ERR_ENV=1
 
-    mount $MOUNT_OPTIONS $1 $2 >&$SILENT_OUT 2>&1
+    mount $MOUNT_OPTIONS $1 $2 ### >&$SILENT_OUT 2>&1
     [ "$?" -eq "0" ] && ERR_ENV=0 && break
 
     usleep 1000000
@@ -248,8 +250,8 @@ mount_part() {
 
 mount_sysroot() {
   if [ "$SYSTEM_TORAM" = "yes" ]; then
-    cp /flash/$IMAGE_SYSTEM /dev/$IMAGE_SYSTEM
-    mount_part "/dev/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
+    cp /flash/$IMAGE_SYSTEM /dev/SYSTEM
+    mount_part "/dev/SYSTEM" "/sysroot" "ro,loop"
   else
     mount_part "/flash/$IMAGE_SYSTEM" "/sysroot" "ro,loop"
   fi
@@ -966,7 +968,7 @@ prepare_sysroot() {
 # Do init tasks to bring up system
 
 # hide kernel log messages on console
-echo '1 4 1 7' > /proc/sys/kernel/printk
+#echo '1 4 1 7' > /proc/sys/kernel/printk
 
 # set ondemand up_threshold
 if [ -e /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ]; then
@@ -983,8 +985,8 @@ if [ -f "./platform_init" ]; then
 fi
 
 # clear screen and hide cursor
-clear
-hidecursor
+#clear
+#hidecursor
 
 # parse command line arguments
 for arg in $(cat /proc/cmdline); do
@@ -1170,5 +1172,5 @@ fi
 
 # switch to new sysroot and start real init
 exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
-
-error "switch_root" "Error in initramfs. Could not switch to new root"
+#debug_shell
+# error "switch_root" "Error in initramfs. Could not switch to new root"
