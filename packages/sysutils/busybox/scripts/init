@@ -1170,6 +1170,7 @@ elif [ -f /sysroot/storage/.rpi_flash_firmware ]; then
 fi
 
 # switch to new sysroot and start real init
-exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
-#debug_shell
+#exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
+showcursor
+exec /usr/bin/busybox setsid cttyhack sh
 # error "switch_root" "Error in initramfs. Could not switch to new root"
