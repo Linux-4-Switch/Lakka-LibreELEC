@@ -29,12 +29,10 @@ MODULE_DIR=/usr/lib/modules
 UPDATE_ROOT=/storage/.update
 UPDATE_DIR="$UPDATE_ROOT"
 
-UPDATE_KERNEL="lakka/KERNEL"
-UPDATE_SYSTEM="lakka/SYSTEM"
-IMAGE_KERNEL="lakka/KERNEL"
-IMAGE_SYSTEM="lakka/SYSTEM"
-
-SPLASH="no"
+UPDATE_KERNEL="KERNEL"
+UPDATE_SYSTEM="SYSTEM"
+IMAGE_KERNEL="KERNEL"
+IMAGE_SYSTEM="SYSTEM"
 
 BOOT_STEP="start"
 MD5_FAILED="0"
@@ -968,7 +966,7 @@ prepare_sysroot() {
 # Do init tasks to bring up system
 
 # hide kernel log messages on console
-#echo '1 4 1 7' > /proc/sys/kernel/printk
+echo '1 4 1 7' > /proc/sys/kernel/printk
 
 # set ondemand up_threshold
 if [ -e /sys/devices/system/cpu/cpufreq/ondemand/up_threshold ]; then
@@ -985,8 +983,8 @@ if [ -f "./platform_init" ]; then
 fi
 
 # clear screen and hide cursor
-#clear
-#hidecursor
+clear
+hidecursor
 
 # parse command line arguments
 for arg in $(cat /proc/cmdline); do
@@ -1170,7 +1168,5 @@ elif [ -f /sysroot/storage/.rpi_flash_firmware ]; then
 fi
 
 # switch to new sysroot and start real init
-#exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
-showcursor
-exec /usr/bin/busybox setsid cttyhack sh
-# error "switch_root" "Error in initramfs. Could not switch to new root"
+exec /usr/bin/busybox switch_root /sysroot /usr/lib/systemd/systemd $INIT_ARGS $INIT_UNIT
+error "switch_root" "Error in initramfs. Could not switch to new root"
