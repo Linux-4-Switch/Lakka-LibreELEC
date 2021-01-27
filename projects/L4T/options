@@ -101,7 +101,9 @@
     LIBRETRO_CORES="${LIBRETRO_CORES// mame2015 /}" 
     LIBRETRO_CORES="${LIBRETRO_CORES// mupen64plus_next /}"
     LIBRETRO_CORES="${LIBRETRO_CORES// yabause /}"
-   
+    LIBRETRO_CORES="${LIBRETRO_CORES// tic80 /}"
+    LIBRETRO_CORES="${LIBRETRO_CORES// ppsspp /}"   
+    
     if [ "$DISTRO" = "Lakka" ]; then
       DRIVER_ADDONS=""
     fi

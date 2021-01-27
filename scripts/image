@@ -218,6 +218,12 @@ for MOD in $(find ${INSTALL}/usr/lib/kernel-overlays/ -type f -name *.ko); do
   ${TARGET_KERNEL_PREFIX}strip --strip-debug ${MOD}
 done
 
+if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
+  mkdir -p ${INSTALL}/var/lib/
+  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/{modules,firmware} ${INSTALL}/var/lib/
+  mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/ && rm -r ${INSTALL}/var/firmware
+fi
+
 # Symlink overlayed modules to /usr/lib/modules
 ln -sT /var/lib/modules ${INSTALL}/usr/lib/modules
 
