@@ -209,8 +209,18 @@ makeinstall_init() {
     touch $INSTALL/etc/fstab
     ln -sf /proc/self/mounts $INSTALL/etc/mtab
 
-  if find_file_path initramfs/platform_init; then
-    cp ${FOUND_PATH} $INSTALL
+  # Copy PROJECT related files to filesystem
+  if [ -d "${PROJECT_DIR}/${PROJECT}/initramfs" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/initramfs/* $INSTALL
+  fi
+
+  # Copy DEVICE related initramfs files to initramfs filesystem
+  if [ -n "$DEVICE" -a -d "$PROJECT_DIR/$PROJECT/devices/$DEVICE/initramfs" ]; then
+    cp -PR $PROJECT_DIR/$PROJECT/devices/$DEVICE/initramfs/* $INSTALL
+  fi
+
+
+  if [ -e $INSTALL/platform_init ]; then
     sed -e "s/@BOOT_LABEL@/$DISTRO_BOOTLABEL/g" \
         -e "s/@DISK_LABEL@/$DISTRO_DISKLABEL/g" \
         -i $INSTALL/platform_init
