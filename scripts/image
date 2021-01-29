@@ -221,7 +221,7 @@ done
 if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
   mkdir -p ${INSTALL}/var/lib/
   mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/{modules,firmware} ${INSTALL}/var/lib/
-  mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/ && rm -r ${INSTALL}/var/firmware
+  mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/firmware && rm -r ${INSTALL}/var/firmware
 fi
 
 # Symlink overlayed modules to /usr/lib/modules
