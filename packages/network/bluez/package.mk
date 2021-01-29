@@ -33,9 +33,15 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-dependency-tracking \
                            --disable-experimental \
                            --enable-sixaxis \
                            --with-gnu-ld \
-                           $BLUEZ_CONFIG \
-                           storagedir=/storage/.cache/bluetooth"
+                           $BLUEZ_CONFIG" 
 
+if [ "$DEVICE" = "Switch" ]; then
+   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET storagedir=/var/bluetoothconfig"
+else
+   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET storagedir=/storage/.cache/bluetooth"
+fi
+ 
+                          
 pre_configure_target() {
 # bluez fails to build in subdirs
   cd $PKG_BUILD
