@@ -58,12 +58,11 @@ makeinstall_target() {
   rm -rf usr/lib/ld.so.conf \
   	usr/lib/ubiquity \
 	usr/lib/nvidia*.json \
-	etc/systemd
-
+	etc/{systemd,NetworkManager,fstab,lightdm,nv-oem-config.conf.t210,skel,wpa_supplicant.conf,enctune.conf,ld.so.conf.d,nv,nvphsd.conf,nvpmodel,xdg}
   cp -PRv etc/udev usr/lib/
   mkdir -p var/lib/firmware
-  cp -PRv usr/lib/firmware var/lib/firmware
-  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware
+  cp -PRv usr/lib/firmware var/lib/
+  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware var/nvidia
 
   echo -e 'Section "InputClass"
     Identifier "joystick catchall"
