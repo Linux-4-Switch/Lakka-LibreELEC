@@ -7,7 +7,7 @@ ConditionKernelCommandLine=!installer
 [Service]
 Type=notify
 # EnvironmentFile=-/run/libreelec/debug/xorg.conf
-ExecStart=/usr/bin/xorg-launch -nolisten tcp vt01 -config /etc/X11/xorg.conf
+ExecStart=/usr/bin/xorg-launch -nolisten tcp vt01 -config /etc/X11/xorg.conf -logfile /storage/Xorg.0.log
 Restart=always
 RestartSec=2
 StartLimitInterval=0

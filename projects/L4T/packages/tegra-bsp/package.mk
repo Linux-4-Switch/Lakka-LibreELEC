@@ -36,21 +36,24 @@ PKG_TOOLCHAIN="make"
 PKG_AUTORECONF="no"
 
 makeinstall_target() {
-  cd $PKG_BUILD
+  mkdir -p $PKG_BUILD/install
+  cd $PKG_BUILD/install
   # extract BSP files
-  tar xf nv_tegra/config.tbz2
-  tar xf nv_tegra/nvidia_drivers.tbz2
-  tar xf nv_tegra/nv_tools.tbz2
-  tar xf nv_tegra/nv_sample_apps/nvgstapps.tbz2
+  tar xf ../nv_tegra/config.tbz2
+  tar xf ../nv_tegra/nvidia_drivers.tbz2
+  tar xf ../nv_tegra/nv_tools.tbz2
+  tar xf ../nv_tegra/nv_sample_apps/nvgstapps.tbz2
 
   # move lib/* to usr/lib to avoid /lib symlink conflicts
   mv lib/* usr/lib/
+  rm -r lib
   # Same for sbin/
-  # mv usr/sbin/* usr/bin/
+  mv usr/sbin/* usr/bin/
   # Move usr/lib/aarch64-linux-gnu/* usr/lib/tegra/* and usr/lib/tegra-egl/* to usr/lib/ for Lakka to resolve libs correctly
   mv usr/lib/aarch64-linux-gnu/* usr/lib/
-  mv usr/lib/tegra-egl/* usr/lib/tegra/*  usr/lib/
-
+  mv usr/lib/tegra-egl/* usr/lib/
+  mv usr/lib/tegra/*  usr/lib/
+  rm -r usr/lib/{tegra-egl,tegra,aarch64-linux-gnu}
   # Remove unneeded files
   rm -rf usr/lib/ld.so.conf \
   	usr/lib/ubiquity \
@@ -61,8 +64,11 @@ makeinstall_target() {
 	etc/systemd/nv-oem-config* \
 	etc/systemd/nvzramconfig.sh
 
-  cp -PRv etc/systemd/ usr/lib/
-  rm -rf etc/systemd/ etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev/rules.d etc/modules-load.d
+  cp -PRv etc/systemd usr/lib/
+  cp -PRv etc/udev usr/lib/
+  mkdir -p var/lib/firmware
+  cp -PRv usr/lib/firmware var/lib/firmware
+  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware
 
   echo -e 'Section "InputClass"
     Identifier "joystick catchall"
@@ -74,7 +80,7 @@ makeinstall_target() {
 EndSection
 
 Section "Files"
-  ModulePath  "/var/lib/xorg/modules"
+  ModulePath  "/usr/lib/xorg/modules"
 EndSection' >> etc/X11/xorg.conf
 
   # Refresh symlinks
@@ -89,15 +95,11 @@ EndSection' >> etc/X11/xorg.conf
   ln -sfn libnvv4l2.so libv4l2.so.0.0.999999
   ln -sfn libnvv4lconvert.so libv4lconvert.so.0.0.999999
   ln -sfn libvulkan.so.1.2.132 libvulkan.so.1.2
-  cd ../../
- 
-  # Move lib to var
-  mv usr/lib/ var/
- 
-  mkdir -p $INSTALL/
-  cp -PRv etc/ usr/ opt/ var/ $INSTALL/
-  cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/var/lib/systemd/system/
+  cd ../../../
 
+  mkdir -p $INSTALL/
+  cp -PRv install/* $INSTALL/ 
+  cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
 }
 
 make_target() {
