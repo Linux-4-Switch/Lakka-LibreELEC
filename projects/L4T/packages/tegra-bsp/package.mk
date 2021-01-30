@@ -58,13 +58,8 @@ makeinstall_target() {
   rm -rf usr/lib/ld.so.conf \
   	usr/lib/ubiquity \
 	usr/lib/nvidia*.json \
-	etc/systemd/nvfb* \
-	etc/systemd/nvgetty.sh \
-	etc/systemd/nvmemwarning.sh \
-	etc/systemd/nv-oem-config* \
-	etc/systemd/nvzramconfig.sh
+	etc/systemd
 
-  cp -PRv etc/systemd usr/lib/
   cp -PRv etc/udev usr/lib/
   mkdir -p var/lib/firmware
   cp -PRv usr/lib/firmware var/lib/firmware
