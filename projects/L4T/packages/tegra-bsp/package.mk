@@ -27,23 +27,77 @@ PKG_SITE="https://developer.nvidia.com/EMBEDDED/linux-tegra%20/"
 case "$DEVICE" in
   tx2|xavier|agx)
     PKG_URL="https://developer.nvidia.com/embedded/L4T/r32_Release_v4.4/r32_Release_v4.4-GMC3/T186/Tegra186_Linux_R32.4.4_aarch64.tbz2"
-    BSP=Tegra186_Linux_R32.4.4_aarch64.tbz2
     ;;
   tx1|nano|Switch)
     PKG_URL="https://developer.nvidia.com/embedded/L4T/r32_Release_v4.4/r32_Release_v4.4-GMC3/T210/Tegra210_Linux_R32.4.4_aarch64.tbz2"
-    BSP=Tegra210_Linux_R32.4.4_aarch64.tbz2
     ;;
 esac
 PKG_TOOLCHAIN="make"
 PKG_AUTORECONF="no"
 
 makeinstall_target() {
-  tar xf $BSP Linux_for_Tegra/nv_tegra
-  for tbz in `ls Linux_for_Tegra/nv_tegra/*.tbz2`; do tar xf $tbz; done
-  tar xf Linux_for_Tegra/nv_tegra/nv_sample_apps/nvgstapps.tbz2
+  cd $PKG_BUILD
+  # extract BSP files
+  tar xf nv_tegra/config.tbz2
+  tar xf nv_tegra/nvidia_drivers.tbz2
+  tar xf nv_tegra/nv_tools.tbz2
+  tar xf nv_tegra/nv_sample_apps/nvgstapps.tbz2
+
+  # move lib/* to usr/lib to avoid /lib symlink conflicts
   mv lib/* usr/lib/
-  mv usr/sbin/* usr/bin/
+  # Same for sbin/
+  # mv usr/sbin/* usr/bin/
+  # Move usr/lib/aarch64-linux-gnu/* usr/lib/tegra/* and usr/lib/tegra-egl/* to usr/lib/ for Lakka to resolve libs correctly
   mv usr/lib/aarch64-linux-gnu/* usr/lib/
+  mv usr/lib/tegra-egl/* usr/lib/tegra/*  usr/lib/
+
+  # Remove unneeded files
+  rm -rf usr/lib/ld.so.conf \
+  	usr/lib/ubiquity \
+	usr/lib/nvidia*.json \
+	etc/systemd/nvfb* \
+	etc/systemd/nvgetty.sh \
+	etc/systemd/nvmemwarning.sh \
+	etc/systemd/nv-oem-config* \
+	etc/systemd/nvzramconfig.sh
+
+  cp -PRv etc/systemd/ usr/lib/
+  rm -rf etc/systemd/ etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev/rules.d etc/modules-load.d
+
+  echo -e 'Section "InputClass"
+    Identifier "joystick catchall"
+    MatchIsJoystick "on"
+    MatchDevicePath "/dev/input/event*"
+    Driver "joystick"
+    Option "StartKeysEnabled" "False"   # These Two Lines Disable
+    Option "StartMouseEnabled" "False"  # The mouse emulation
+EndSection
+
+Section "Files"
+  ModulePath  "/var/lib/xorg/modules"
+EndSection' >> etc/X11/xorg.conf
+
+  # Refresh symlinks
+  cd usr/lib/
+  ln -sfn libcuda.so.1.1 libcuda.so
+  ln -sfn libdrm.so.2 libdrm_nvdc.so
+  ln -sfn libnvbufsurface.so.1.0.0 libnvbufsurface.so
+  ln -sfn libnvbufsurftransform.so.1.0.0 libnvbufsurftransform.so
+  ln -sfn libnvbuf_utils.so.1.0.0 libnvbuf_utils.so
+  ln -sfn libnvdsbufferpool.so.1.0.0 libnvdsbufferpool.so
+  ln -sfn libnvid_mapper.so.1.0.0 libnvid_mapper.so
+  ln -sfn libnvv4l2.so libv4l2.so.0.0.999999
+  ln -sfn libnvv4lconvert.so libv4lconvert.so.0.0.999999
+  ln -sfn libvulkan.so.1.2.132 libvulkan.so.1.2
+  cd ../../
+ 
+  # Move lib to var
+  mv usr/lib/ var/
+ 
+  mkdir -p $INSTALL/
+  cp -PRv etc/ usr/ opt/ var/ $INSTALL/
+  cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/var/lib/systemd/system/
+
 }
 
 make_target() {

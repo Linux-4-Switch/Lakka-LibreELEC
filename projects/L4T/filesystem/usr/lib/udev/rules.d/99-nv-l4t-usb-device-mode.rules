@@ -1,5 +1,0 @@
-#
-# Copyright (c) 2019, NVIDIA CORPORATION.  All rights reserved.
-#
-
-ACTION=="change" KERNEL=="android0" SUBSYSTEM=="android_usb" RUN+="/opt/nvidia/l4t-usb-device-mode/nv-l4t-usb-device-mode-state-change.sh"
