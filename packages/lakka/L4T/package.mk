@@ -32,7 +32,7 @@ PKG_SHORTDESC="Lakka metapackage for Switch"
 PKG_LONGDESC=""
 
 if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" joycond"
+  PKG_DEPENDS_TARGET+=" joycond mergerfs"
 fi
 
 PKG_IS_ADDON="no"

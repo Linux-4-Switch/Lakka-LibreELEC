@@ -32,8 +32,8 @@ PKG_TOOLCHAIN="cmake-make"
 post_makeinstall_target() {
   rm -r $INSTALL/etc/modules-load.d
   mv $INSTALL/lib/* $INSTALL/usr/lib/ && rmdir $INSTALL/lib
-  mv $INSTALL/etc/systemd $INSTALL/ust/lib/systemd
+  mv $INSTALL/etc/systemd $INSTALL/usr/lib/systemd
   mkdir -p $INSTALL/usr/lib/systemd/system/multi-user.target.wants
-  sed -i 's/WorkingDirectory=/root/WorkingDirectory=/storage/g' $INSTALL/usr/lib/systemd/system/joycond.service
+  sed -i 's|WorkingDirectory=/root|WorkingDirectory=/storage|g' $INSTALL/usr/lib/systemd/system/joycond.service
   ln -s $INSTALL/usr/lib/systemd/system/joycond.service $INSTALL/usr/lib/systemd/system/multi-user.target.wants/joycond.service
 }
