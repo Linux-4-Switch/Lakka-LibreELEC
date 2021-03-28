@@ -38,6 +38,7 @@ PKG_AUTORECONF="no"
 makeinstall_target() {
   mkdir -p $PKG_BUILD/install
   cd $PKG_BUILD/install
+
   # extract BSP files
   tar xf ../nv_tegra/config.tbz2
   tar xf ../nv_tegra/nvidia_drivers.tbz2
@@ -47,19 +48,24 @@ makeinstall_target() {
   # move lib/* to usr/lib to avoid /lib symlink conflicts
   mv lib/* usr/lib/
   rm -r lib
+
   # Same for sbin/
   mv usr/sbin/* usr/bin/
+
   # Move usr/lib/aarch64-linux-gnu/* usr/lib/tegra/* and usr/lib/tegra-egl/* to usr/lib/ for Lakka to resolve libs correctly
   mv usr/lib/aarch64-linux-gnu/* usr/lib/
   mv usr/lib/tegra-egl/* usr/lib/
   mv usr/lib/tegra/*  usr/lib/
   rm -r usr/lib/{tegra-egl,tegra,aarch64-linux-gnu}
+
   # Remove unneeded files
-  rm -rf usr/lib/ld.so.conf \
-  	usr/lib/ubiquity \
-	usr/lib/nvidia*.json \
-	etc/{systemd,NetworkManager,fstab,lightdm,nv-oem-config.conf.t210,skel,wpa_supplicant.conf,enctune.conf,ld.so.conf.d,nv,nvphsd.conf,nvpmodel,xdg}
+  rm -rf usr/lib/ld.so.conf usr/lib/ubiquity usr/lib/nvidia*.json \
+	etc/{systemd,NetworkManager,fstab,lightdm,nv-oem-config.conf.t210,skel,wpa_supplicant.conf,enctune.conf,nv,nvphsd.conf,nvpmodel,xdg}
+  
+  # Move udev from etc/ to usr/lib/
   cp -PRv etc/udev usr/lib/
+ 
+  # Create firmware in var/
   mkdir -p var/lib/firmware
   cp -PRv usr/lib/firmware var/lib/
   rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware var/nvidia
@@ -76,7 +82,8 @@ makeinstall_target() {
   ln -sfn libnvv4l2.so libv4l2.so.0.0.999999
   ln -sfn libnvv4lconvert.so libv4lconvert.so.0.0.999999
   ln -sfn libvulkan.so.1.2.132 libvulkan.so.1.2
-  cd firmware/gm20b
+
+  cd ../../var/lib/firmware/gm20b
   ln -sfn "../tegra21x/acr_ucode.bin" "acr_ucode.bin"
   ln -sfn "../tegra21x/gpmu_ucode.bin" "gpmu_ucode.bin"
   ln -sfn "../tegra21x/gpmu_ucode_desc.bin" "gpmu_ucode_desc.bin"
@@ -90,10 +97,10 @@ makeinstall_target() {
   ln -sfn "../tegra21x/gpccs.bin" "gpccs.bin"
   cd ../../../../../
 
-  mkdir -p $INSTALL/
+  mkdir -p $INSTALL/etc/X11/xorg.conf.d/
   cp -PRv install/* $INSTALL/ 
   cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
-  cp -PRv $PKG_DIR/assets/50-joysticks.conf etc/X11/xorg.conf.d/
+  cp -PRv $PKG_DIR/assets/*.conf $INSTALL/etc/X11/xorg.conf.d/
 }
 
 make_target() {
