@@ -63,20 +63,7 @@ makeinstall_target() {
   mkdir -p var/lib/firmware
   cp -PRv usr/lib/firmware var/lib/
   rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware var/nvidia
-
-  echo -e 'Section "InputClass"
-    Identifier "joystick catchall"
-    MatchIsJoystick "on"
-    MatchDevicePath "/dev/input/event*"
-    Driver "joystick"
-    Option "StartKeysEnabled" "False"   # These Two Lines Disable
-    Option "StartMouseEnabled" "False"  # The mouse emulation
-EndSection
-
-Section "Files"
-  ModulePath  "/usr/lib/xorg/modules"
-EndSection' >> etc/X11/xorg.conf
-
+  
   # Refresh symlinks
   cd usr/lib/
   ln -sfn libcuda.so.1.1 libcuda.so
@@ -89,11 +76,24 @@ EndSection' >> etc/X11/xorg.conf
   ln -sfn libnvv4l2.so libv4l2.so.0.0.999999
   ln -sfn libnvv4lconvert.so libv4lconvert.so.0.0.999999
   ln -sfn libvulkan.so.1.2.132 libvulkan.so.1.2
-  cd ../../../
+  cd firmware/gm20b
+  ln -sfn "../tegra21x/acr_ucode.bin" "acr_ucode.bin"
+  ln -sfn "../tegra21x/gpmu_ucode.bin" "gpmu_ucode.bin"
+  ln -sfn "../tegra21x/gpmu_ucode_desc.bin" "gpmu_ucode_desc.bin"
+  ln -sfn "../tegra21x/gpmu_ucode_image.bin" "gpmu_ucode_image.bin"
+  ln -sfn "../tegra21x/gpu2cde.bin" "gpu2cde.bin"
+  ln -sfn "../tegra21x/NETB_img.bin" "NETB_img.bin"
+  ln -sfn "../tegra21x/fecs_sig.bin" "fecs_sig.bin"
+  ln -sfn "../tegra21x/pmu_sig.bin" "pmu_sig.bin"
+  ln -sfn "../tegra21x/pmu_bl.bin" "pmu_bl.bin"
+  ln -sfn "../tegra21x/fecs.bin" "fecs.bin"
+  ln -sfn "../tegra21x/gpccs.bin" "gpccs.bin"
+  cd ../../../../../
 
   mkdir -p $INSTALL/
   cp -PRv install/* $INSTALL/ 
   cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
+  cp -PRv $PKG_DIR/assets/50-joysticks.conf etc/X11/xorg.conf.d/
 }
 
 make_target() {
