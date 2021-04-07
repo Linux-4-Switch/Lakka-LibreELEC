@@ -91,7 +91,7 @@ makeinstall_target() {
   
   mkdir -p $INSTALL/etc/X11/xorg.conf.d/
   cp -PRv install/* $INSTALL/ 
-  cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
+  #cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
   #cp -PRv $PKG_DIR/assets/*.conf $INSTALL/etc/X11/xorg.conf.d/
   #chmod -R root:root $INSTALL/usr/lib/*
 }
