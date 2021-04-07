@@ -1,7 +1,7 @@
 load mmc 1:1 0x83000000 lakka/KERNEL
 load mmc 1:1 0x8d000000 lakka/tegra210-icosa.dtb
 
-setenv bootargs "boot=/dev/mmcblk0p1 SYSTEM_IMAGE=lakka/SYSTEM toram nofscl
+setenv bootargs "boot=/dev/mmcblk0p1 SYSTEM_IMAGE=lakka/SYSTEM toram nofsck
 vpr_resize pmc_reboot2payload.enabled=1 pmc_reboot2payload.reboot_action=bootloader
 pmc_reboot2payload.default_payload=reboot_payload.bin
 pmc_reboot2payload.hekate_config_id=SWR-LAK access=m2 nvdec_enabled=0
