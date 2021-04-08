@@ -1,7 +1,7 @@
 [Unit]
-Description=Debug Shell on /dev/ttyS0
+Description=Debug Shell on /dev/ttyS1 (Uart B)
 DefaultDependencies=no
-ConditionKernelCommandLine=console=ttyS0,115200n8
+ConditionKernelCommandLine=console=ttyS1,115200n8
 
 [Service]
 WorkingDirectory=/storage
@@ -11,7 +11,7 @@ ExecStart=/bin/sh
 Restart=always
 RestartSec=0
 StandardInput=tty
-TTYPath=/dev/ttyS0
+TTYPath=/dev/ttyS1
 KillMode=process
 IgnoreSIGPIPE=no
 # bash ignores SIGTERM

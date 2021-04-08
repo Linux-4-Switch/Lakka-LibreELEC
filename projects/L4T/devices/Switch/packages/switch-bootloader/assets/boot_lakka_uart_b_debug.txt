@@ -1,0 +1,24 @@
+setenv ovcfgaddr 0x8d100000
+
+load mmc 1:1 0x83000000 lakka/KERNEL
+load mmc 1:1 0x8d000000 lakka/tegra210-icosa.dtb
+
+# Store dtb filesize
+setenv dtb_part_size ${filesize}
+
+# Load dtb in memory
+fdt addr 0x8d000000 ${dtb_part_size}
+fdt resize 8192
+
+load mmc 1:1 ${ovcfgaddr} switchroot/overlays/tegra210-UART-B-overlay.dtbo && fdt apply ${ovcfgaddr}
+
+setenv bootargs "boot=/dev/mmcblk0p1 SYSTEM_IMAGE=lakka/SYSTEM toram nofsck retroarch=0
+no_console_suspend console=ttyS1,115200,8n1 earlycon=tegra_comb_uart,mmio32,0x70006040
+vpr_resize pmc_reboot2payload.enabled=1 pmc_reboot2payload.reboot_action=bootloader
+pmc_reboot2payload.default_payload=reboot_payload.bin
+pmc_reboot2payload.hekate_config_id=SWR-LAK access=m2 nvdec_enabled=0
+firmware_class.path=/usr/lib/firmware tegra_fbmem=0x0@0x1
+consoleblank=0 fbcon=rotate:3"
+
+usb reset
+booti 0x83000000 - 0x8d000000
