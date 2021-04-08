@@ -59,6 +59,10 @@ if [ "$AVAHI_DAEMON" = yes ]; then
   PKG_DEPENDS_TARGET+=" avahi nss-mdns"
 fi
 
+if [ "$DEVICE" = "Switch" ]; then
+   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET pulseaudio"
+fi
+
 if [ "$DISPLAYSERVER" != "no" ]; then
   PKG_DEPENDS_TARGET+=" $DISPLAYSERVER"
 fi
@@ -98,6 +102,11 @@ fi
 
 RETROARCH_NEON=""
 
+if [ "$PROJECT" = "L4T" ]; then
+   RETROARCH_GL="$RETROARCH_GL --disable-vulkan --disable-egl --disable-vulkan_display --enable-x11"
+   RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
+fi
+
 if [[ "$TARGET_FPU" =~ "neon" ]]; then
   if [ "$ARCH" = "aarch64" ]; then
     RETROARCH_NEON=""
@@ -118,6 +127,10 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --enable-cdrom \
                            --datarootdir=$SYSROOT_PREFIX/usr/share" # don't use host /usr/share!
 
+if [ "$PROJECT" = "L4T" ]; then
+   PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-pulse"
+fi
+
 pre_configure_target() {
   TARGET_CONFIGURE_OPTS=""
   cd $PKG_BUILD
@@ -137,7 +150,11 @@ pre_make_target() {
 }
 
 make_target() {
-  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
+  #if [ "$DEVICE" = "Switch" ]; then
+  #  make V=1 HAVE_LAKKA=1 HAVE_LAKKA_SWITCH=1 HAVE_ZARCH=0
+  #else
+    make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0
+  #fi
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C libretro-common/audio/dsp_filters compiler=$CC extra_flags="$CFLAGS"
 }
@@ -282,7 +299,25 @@ makeinstall_target() {
     sed -i -e "s/# audio_enable_menu_cancel = false/audio_enable_menu_cancel = true/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/# audio_enable_menu_notice = false/audio_enable_menu_notice = true/" $INSTALL/etc/retroarch.cfg
   fi
+  
+  # Switch
+  if [ "$PROJECT" == "L4T" -a "$DEVICE" == "Switch" ]; then
+    sed -i -e "s/menu_mouse_enable = false/menu_mouse_enable = true/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/input_driver = udev/input_driver = x/" $INSTALL/etc/retroarch.cfg
+    
+    sed -i -e "s/# video_hard_sync = false/video_hard_sync = true/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/# video_crop_overscan = true/video_crop_overscan = false/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/# menu_show_online_updater = true/menu_show_online_updater = false/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/# input_joypad_driver =/input_joypad_driver = linuxraw/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/video_threaded = true/video_threaded = false/" $INSTALL/etc/retroarch.cfg
+    sed -i -e "s/input_autodetect_enable = true/input_autodetect_enable = false/"  $INSTALL/etc/retroarch.cfg
+    
+    echo "xmb_shadows_enable = true" >> $INSTALL/etc/retroarch.cfg
 
+    # Joypad Autoconfig doesn't work as Joy-Cons VID and PID are both 0
+    cat $PROJECT_DIR/L4T/devices/Switch/joypad/Joy-Con_Combined.cfg >> $INSTALL/etc/retroarch.cfg
+  fi
+  
   # System overlay
   mkdir -p $INSTALL/usr/share/retroarch-system
     touch $INSTALL/usr/share/retroarch-system/.placeholder
