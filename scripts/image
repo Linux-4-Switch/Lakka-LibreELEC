@@ -224,11 +224,13 @@ if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
   mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/firmware && rm -r ${INSTALL}/var/firmware
 fi
 
-# Symlink overlayed modules to /usr/lib/modules
-ln -sT /var/lib/modules ${INSTALL}/usr/lib/modules
+if [ ! "${BOOTLOADER}" = "switch-bootloader" ]; then
+  # Symlink overlayed modules to /usr/lib/modules
+  ln -sT /var/lib/modules ${INSTALL}/usr/lib/modules
 
-# Symlink overlayed firmware to /usr/lib/firmware
-ln -sT /var/lib/firmware ${INSTALL}/usr/lib/firmware
+  # Symlink overlayed firmware to /usr/lib/firmware
+  ln -sT /var/lib/firmware ${INSTALL}/usr/lib/firmware
+fi
 
 # Make target dir
 mkdir -p ${TARGET_IMG}
