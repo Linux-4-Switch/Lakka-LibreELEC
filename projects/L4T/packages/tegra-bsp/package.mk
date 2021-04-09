@@ -89,11 +89,10 @@ makeinstall_target() {
   ln -sfn tegra21x gm20b
   cd ../../../../
   
-  mkdir -p $INSTALL/etc/X11/xorg.conf.d/
   cp -PRv install/* $INSTALL/ 
-  #cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
-  #cp -PRv $PKG_DIR/assets/*.conf $INSTALL/etc/X11/xorg.conf.d/
-  #chmod -R root:root $INSTALL/usr/lib/*
+  
+  cat $PKG_DIR/assets/50-joysticks.conf >> $INSTALL/etc/X11/xorg.conf
+  
 }
 
 make_target() {

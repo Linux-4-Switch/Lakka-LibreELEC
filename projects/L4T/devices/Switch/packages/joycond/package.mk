@@ -34,6 +34,8 @@ post_makeinstall_target() {
   mv $INSTALL/lib/* $INSTALL/usr/lib/ && rmdir $INSTALL/lib
   mv $INSTALL/etc/systemd $INSTALL/usr/lib/systemd
   mkdir -p $INSTALL/usr/lib/systemd/system/multi-user.target.wants
-  sed -i 's|WorkingDirectory=/root|WorkingDirectory=/storage|g' $INSTALL/usr/lib/systemd/system/joycond.service
+  mkdir -p $INSTALL/usr/lib/udev
+  mv $INSTALL/usr/lib/rules.d $INSTALL/usr/lib/udev/
+  sed -i 's|WorkingDirectory=/root|WorkingDirectory=/var|g' $INSTALL/usr/lib/systemd/system/joycond.service
   ln -s $INSTALL/usr/lib/systemd/system/joycond.service $INSTALL/usr/lib/systemd/system/multi-user.target.wants/joycond.service
 }
