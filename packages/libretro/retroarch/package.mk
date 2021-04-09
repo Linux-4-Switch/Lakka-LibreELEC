@@ -314,6 +314,10 @@ makeinstall_target() {
     sed -i -e "s/input_autodetect_enable = true/input_autodetect_enable = false/"  $INSTALL/etc/retroarch.cfg
     
     echo "xmb_shadows_enable = true" >> $INSTALL/etc/retroarch.cfg
+    #Fix joycon index
+    sed -i -e "s/# input_player1_joypad_index = 0/input_player1_joypad_index = \"2\"/" $INSTALL/etc/retroarch.cfg
+    #Set Joypad as joypad with analog
+    sed -i -e "s/# input_libretro_device_p1 =/input_libretro_device_p1 = \"5\"/" $INSTALL/etc/retroarch.cfg
 
     # Joypad Autoconfig doesn't work as Joy-Cons VID and PID are both 0
     # Does this still apply with joycond and new driver? Need to check this out.

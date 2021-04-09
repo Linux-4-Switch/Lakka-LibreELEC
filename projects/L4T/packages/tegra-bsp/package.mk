@@ -37,6 +37,7 @@ PKG_AUTORECONF="no"
 
 makeinstall_target() {
   mkdir -p $PKG_BUILD/install
+  mkdir -p $INSTALL
   cd $PKG_BUILD/install
 
   # extract BSP files
@@ -68,7 +69,7 @@ makeinstall_target() {
   # Create firmware in usr/lib/kernel-overlays/base/lib/firmware/
   #mkdir -p usr/lib/kernel-overlays/base/lib/firmware/
   #cp -PRv usr/lib/firmware usr/lib/kernel-overlays/base/lib/
-  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d var.nvidia
+  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d var/nvidia
   #rm -rf usr/lib/firmware
   
   # Refresh symlinks
