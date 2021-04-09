@@ -219,9 +219,15 @@ for MOD in $(find ${INSTALL}/usr/lib/kernel-overlays/ -type f -name *.ko); do
 done
 
 if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
-  mkdir -p ${INSTALL}/var/lib/
-  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/{modules,firmware} ${INSTALL}/var/lib/
-  mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/firmware && rm -r ${INSTALL}/var/firmware
+  PWD=$(pwd)
+  rm ${INSTALL}/usr/lib/libGL.so.1
+  cd ${INSTALL}/usr/lib/
+  ln -s libGLX_nvidia.so.0 libGL.so.1
+  cd $PWD
+  PWD=""
+  #mkdir -p ${INSTALL}/var/lib/
+  #mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/{modules,firmware} ${INSTALL}/var/lib/
+  #mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/firmware && rm -r ${INSTALL}/var/firmware
 fi
 
 if [ ! "${BOOTLOADER}" = "switch-bootloader" ]; then

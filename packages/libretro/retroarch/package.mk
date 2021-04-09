@@ -103,8 +103,10 @@ fi
 RETROARCH_NEON=""
 
 if [ "$PROJECT" = "L4T" ]; then
-   RETROARCH_GL="$RETROARCH_GL --disable-vulkan --disable-egl --disable-vulkan_display --enable-x11"
+   RETROARCH_GL="$RETROARCH_GL --disable-vulkan --disable-egl --disable-vulkan_display --enable-opengl"
+   RETROARCH_GL=${RETROARCH_GL//--enable-opengles/--disable-gles}
    RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
+   RETROARCH_GL=${RETROARCH_GL//--disable-x11/--enable-x11}
 fi
 
 if [[ "$TARGET_FPU" =~ "neon" ]]; then

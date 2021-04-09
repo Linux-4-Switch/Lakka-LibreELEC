@@ -5,15 +5,17 @@ ConditionKernelCommandLine=!retroarch=0
 Requires=graphical.target
 
 [Service]
-Environment=HOME=/storage
+Environment=HOME=/storage DISPLAY=:0
 EnvironmentFile=-/run/libreelec/retroarch.conf
 EnvironmentFile=-/storage/.cache/services/retroarch.conf
 ExecStartPre=-/usr/lib/retroarch/retroarch-config
-ExecStart=/usr/bin/retroarch
+ExecStart=/usr/bin/retroarch -v
+StandardOutput=file:/storage/stdout_log-retroarch.log
+StandardError=file:/storage/err_log-retroarch.log
 # keep KillMode=process unless there is no good reason to switch to cgroup
 KillMode=process
 TimeoutStopSec=10
-Restart=always
+Restart=never
 RestartSec=2
 StartLimitInterval=0
 
