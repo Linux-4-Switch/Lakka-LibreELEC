@@ -79,6 +79,11 @@ logger -t Xorg "### creating needed directories and symlinks ###"
     ln -sf /usr/bin/nvidia-legacy-xconfig /var/lib/nvidia-xconfig
     insmod /var/lib/nvidia.ko
     XORG_ARGS="$XORG_ARGS -ignoreABI"
+  elif [ "$1" = "switch" ]; then
+    ln -sf /usr/lib/libGLX_nvidia.so.0 /var/lib/libGL.so
+    ln -sf /usr/lib/xorg/modules/extensions/libglxserver_nvidia.so /var/lib/libglx.so
+    ln -sf /usr/lib/xorg/modules/drivers/nvidia_drv.so /var/lib/nvidia_drv.so
+    XORG_ARGS="$XORG_ARGS -ignoreABI"
   else
     ln -sf /usr/lib/libGL_mesa.so.1 /var/lib/libGL.so
     ln -sf /usr/lib/xorg/modules/extensions/libglx_mesa.so /var/lib/libglx.so

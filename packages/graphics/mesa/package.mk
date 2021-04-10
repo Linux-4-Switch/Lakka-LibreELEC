@@ -13,6 +13,7 @@ PKG_LONGDESC="Mesa is a 3-D graphics library with an API."
 PKG_TOOLCHAIN="meson"
 
 get_graphicdrivers
+#DRI_DRIVERS="nouveau"
 
 PKG_MESON_OPTS_TARGET="-Ddri-drivers=${DRI_DRIVERS// /,} \
                        -Dgallium-drivers=${GALLIUM_DRIVERS// /,} \
@@ -38,6 +39,10 @@ PKG_MESON_OPTS_TARGET="-Ddri-drivers=${DRI_DRIVERS// /,} \
 
 if [ "$TARGET_ARCH" = "i386" ]; then
   PKG_MESON_OPTS_TARGET="${PKG_MESON_OPTS_TARGET//-Dvulkan-drivers=auto/-Dvulkan-drivers=}"
+fi
+
+if [ "$PROJECT" = "L4T" ]; then
+	PKG_MESON_OPTS_TARGET="${PKG_MESON_OPTS_TARGET//-Dglvnd=false/-Dglvnd=true}"
 fi
 
 if [ "$DISPLAYSERVER" = "x11" ]; then

@@ -65,10 +65,11 @@ makeinstall_target() {
   # Move udev from etc/ to usr/lib/
   cp -PRv etc/udev usr/lib/
  
-  # Create firmware in var/
-  mkdir -p var/lib/firmware
-  cp -PRv usr/lib/firmware var/lib/
-  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d usr/lib/firmware var/nvidia
+  # Create firmware in usr/lib/kernel-overlays/base/lib/firmware/
+  #mkdir -p usr/lib/kernel-overlays/base/lib/firmware/
+  #cp -PRv usr/lib/firmware usr/lib/kernel-overlays/base/lib/
+  rm -rf etc/systemd etc/sysctl.d etc/hostname etc/hosts etc/modprobe.d etc/udev etc/modules-load.d var.nvidia
+  #rm -rf usr/lib/firmware
   
   # Refresh symlinks
   cd usr/lib/
@@ -83,24 +84,16 @@ makeinstall_target() {
   ln -sfn libnvv4lconvert.so libv4lconvert.so.0.0.999999
   ln -sfn libvulkan.so.1.2.132 libvulkan.so.1.2
 
-  cd ../../var/lib/firmware/gm20b
-  ln -sfn "../tegra21x/acr_ucode.bin" "acr_ucode.bin"
-  ln -sfn "../tegra21x/gpmu_ucode.bin" "gpmu_ucode.bin"
-  ln -sfn "../tegra21x/gpmu_ucode_desc.bin" "gpmu_ucode_desc.bin"
-  ln -sfn "../tegra21x/gpmu_ucode_image.bin" "gpmu_ucode_image.bin"
-  ln -sfn "../tegra21x/gpu2cde.bin" "gpu2cde.bin"
-  ln -sfn "../tegra21x/NETB_img.bin" "NETB_img.bin"
-  ln -sfn "../tegra21x/fecs_sig.bin" "fecs_sig.bin"
-  ln -sfn "../tegra21x/pmu_sig.bin" "pmu_sig.bin"
-  ln -sfn "../tegra21x/pmu_bl.bin" "pmu_bl.bin"
-  ln -sfn "../tegra21x/fecs.bin" "fecs.bin"
-  ln -sfn "../tegra21x/gpccs.bin" "gpccs.bin"
-  cd ../../../../../
-
+  cd firmware
+  rm -r gm20b
+  ln -sfn tegra21x gm20b
+  cd ../../../../
+  
   mkdir -p $INSTALL/etc/X11/xorg.conf.d/
   cp -PRv install/* $INSTALL/ 
   cp -PRv $PKG_DIR/assets/xorg.service $INSTALL/usr/lib/systemd/system/
-  cp -PRv $PKG_DIR/assets/*.conf $INSTALL/etc/X11/xorg.conf.d/
+  #cp -PRv $PKG_DIR/assets/*.conf $INSTALL/etc/X11/xorg.conf.d/
+  #chmod -R root:root $INSTALL/usr/lib/*
 }
 
 make_target() {

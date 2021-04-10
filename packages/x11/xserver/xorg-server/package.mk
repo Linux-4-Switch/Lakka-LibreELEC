@@ -3,8 +3,8 @@
 # Copyright (C) 2018-present Team LibreELEC (https://libreelec.tv)
 
 PKG_NAME="xorg-server"
-PKG_VERSION="1.20.5"
-PKG_SHA256="a81d8243f37e75a03d4f8c55f96d0bc25802be6ec45c3bfa5cb614c6d01bac9d"
+PKG_VERSION="1.20.10"
+#PKG_SHA256="a81d8243f37e75a03d4f8c55f96d0bc25802be6ec45c3bfa5cb614c6d01bac9d"
 PKG_LICENSE="OSS"
 PKG_SITE="http://www.X.org"
 PKG_URL="http://xorg.freedesktop.org/archive/individual/xserver/$PKG_NAME-$PKG_VERSION.tar.bz2"
@@ -24,7 +24,11 @@ fi
 
 if [ ! "$OPENGL" = "no" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET $OPENGL libepoxy"
-  XORG_MESA="--enable-glx --enable-dri --enable-glamor"
+  if [ ! "$PROJECT" = "L4T" ]; then 
+    XORG_MESA="--enable-glx --enable-dri --enable-glamor"
+  else  
+    XORG_MESA="--enable-glx --enable-dri --disable-glamor"
+  fi
 else
   XORG_MESA="--disable-glx --disable-dri --disable-glamor"
 fi
@@ -129,13 +133,14 @@ post_makeinstall_target() {
       sed -i -e "s|@NVIDIA_LEGACY_VERSION@|$(get_pkg_version xf86-video-nvidia-legacy)|g" $INSTALL/usr/lib/xorg/xorg-configure
 
   if [ ! "$OPENGL" = "no" ]; then
-    if [ -f $INSTALL/usr/lib/xorg/modules/extensions/libglx.so ]; then
-      mv $INSTALL/usr/lib/xorg/modules/extensions/libglx.so \
-         $INSTALL/usr/lib/xorg/modules/extensions/libglx_mesa.so # rename for cooperate with nvidia drivers
-      ln -sf /var/lib/libglx.so $INSTALL/usr/lib/xorg/modules/extensions/libglx.so
+    if [ ! "$PROJECT" = "L4T" ]; then
+      if [ -f $INSTALL/usr/lib/xorg/modules/extensions/libglx.so ]; then
+        mv $INSTALL/usr/lib/xorg/modules/extensions/libglx.so \
+           $INSTALL/usr/lib/xorg/modules/extensions/libglx_mesa.so # rename for cooperate with nvidia drivers
+        ln -sf /var/lib/libglx.so $INSTALL/usr/lib/xorg/modules/extensions/libglx.so
+      fi
     fi
   fi
-
   mkdir -p $INSTALL/etc/X11
     if find_file_path config/xorg.conf ; then
       cp $FOUND_PATH $INSTALL/etc/X11
