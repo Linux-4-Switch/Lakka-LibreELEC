@@ -5,7 +5,7 @@
 PKG_NAME="linux"
 PKG_LICENSE="GPL"
 PKG_SITE="http://www.kernel.org"
-PKG_DEPENDS_HOST="ccache:host openssl:host"
+PKG_DEPENDS_HOST="ccache:host rsync:host openssl:host"
 PKG_DEPENDS_TARGET="toolchain linux:host kmod:host xz:host wireless-regdb keyutils $KERNEL_EXTRA_DEPENDS_TARGET"
 PKG_DEPENDS_INIT="toolchain"
 PKG_NEED_UNPACK="$LINUX_DEPENDS $(get_pkg_directory busybox)"
@@ -22,25 +22,30 @@ case "$LINUX" in
     PKG_SOURCE_NAME="linux-$LINUX-$PKG_VERSION.tar.gz"
     ;;
   odroidgoA-4.4)
-    PKG_VERSION="3e230d424b823267fec12d003d5ca36b3f694229"
-    PKG_SHA256="ec193f88820d1b3b2ff1478df790381f7efbb04cee0062fc91f8f76d52de4dcc"
+    PKG_VERSION="fbfe5c30bf5643f44cc8c87c9b53b1ba2a0bfa49"
+    PKG_SHA256="ca4071dcd23a6c5b8051b814ec6bcf2a73e0569422156be143ac3f50df3f7d6b"
     PKG_URL="https://github.com/hardkernel/linux/archive/$PKG_VERSION.tar.gz"
     PKG_SOURCE_NAME="linux-$LINUX-$PKG_VERSION.tar.gz"
     ;;
   raspberrypi)
-    PKG_VERSION="edc21a35b9b7b427716564c3b744ed2a89fcd19a" # 5.4.71
-    PKG_SHA256="bce0429841ef280d5ae991a261954f90ad6de35a091b59714f1535c8d1f3334e"
+    PKG_VERSION="d1fd8a5727908bb677c003d2ae977e9d935a6f94"
+    PKG_SHA256="f4b4bbb56c2b8b7b6f311c1f68efb0c691d03dc16cbc50f3de7ff5a28cc3df44"
     PKG_URL="https://github.com/raspberrypi/linux/archive/$PKG_VERSION.tar.gz"
     PKG_SOURCE_NAME="linux-$LINUX-$PKG_VERSION.tar.gz"
     PKG_PATCH_DIRS="rpi"
+    ;;
+  odroidxu4-4.14)
+    PKG_VERSION="864c4519b77763274b61a035b33bc92f71084b59"
+    PKG_SHA256="4cbafde263437b5c9ab5c4a2496866eb19922fb4c80cf5c6ef3c8b65cf1936be"
+    PKG_URL="https://github.com/hardkernel/linux/archive/$PKG_VERSION.tar.gz"
     ;;
   odroidxu3-5.4)
     PKG_VERSION="5e12d570f207e48f321029b15026ae7c4ab21217"
     PKG_URL="https://github.com/hardkernel/linux/archive/$PKG_VERSION.tar.gz"
     ;;
   mainline-5.10)
-    PKG_VERSION="5.10.2"
-    PKG_SHA256="3b84e13abae26af17ebccc4d7212f5843a991127a73a320848d5c6942ef781a2"
+    PKG_VERSION="5.10.26"
+    PKG_SHA256="fc532833f1ac167f363f1b9de85db39d2d635ab516f66dc381bdd70804601482"
     PKG_URL="https://www.kernel.org/pub/linux/kernel/v5.x/$PKG_NAME-$PKG_VERSION.tar.xz"
     PKG_PATCH_DIRS="default"
     ;;
@@ -198,11 +203,11 @@ pre_make_target() {
   if [ "$TARGET_ARCH" = "x86_64" -o "$TARGET_ARCH" = "i386" ]; then
     # copy some extra firmware to linux tree
     mkdir -p $PKG_BUILD/external-firmware
-      cp -a $(get_build_dir kernel-firmware)/{amdgpu,amd-ucode,i915,nvidia,radeon,e100,rtl_nic} $PKG_BUILD/external-firmware
+      cp -a $(get_build_dir kernel-firmware)/.copied-firmware/{amdgpu,amd-ucode,i915,nvidia,radeon,e100,rtl_nic} $PKG_BUILD/external-firmware
       cp -a $(get_build_dir intel-ucode)/intel-ucode $PKG_BUILD/external-firmware
   elif [ "$TARGET_ARCH" = "arm" -a "$DEVICE" = "iMX6" ]; then
       mkdir -p $PKG_BUILD/external-firmware
-        cp -a $(get_build_dir kernel-firmware)/imx $PKG_BUILD/external-firmware
+        cp -a $(get_build_dir kernel-firmware)/.copied-firmware/imx $PKG_BUILD/external-firmware
   fi
 
   if [ -d $PKG_BUILD/external-firmware/ ]; then
@@ -240,7 +245,7 @@ make_target() {
      export KCFLAGS+="-Wno-error=sizeof-pointer-memaccess -Wno-error=missing-attributes -Wno-error=stringop-truncation -Wno-error=stringop-overflow= -Wno-error=address-of-packed-member -Wno-error=tautological-compare -Wno-error=packed-not-aligned"
   fi
 
-  kernel_make $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD modules
+  kernel_make TOOLCHAIN="$TOOLCHAIN" $KERNEL_TARGET $KERNEL_MAKE_EXTRACMD modules
 
   if [ "$PKG_BUILD_PERF" = "yes" ] ; then
     ( cd tools/perf

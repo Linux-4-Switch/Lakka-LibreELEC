@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="stella2014"
-PKG_VERSION="fc87f2c"
+PKG_VERSION="f843da4"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"

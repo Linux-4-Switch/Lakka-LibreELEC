@@ -74,18 +74,21 @@ targets="\
 	Amlogic|AMLGX|arm|image \
 	Generic||x86_64|image \
 	Generic||i386|image \
+	L4T|Switch|aarch64|image \
+	NXP|iMX6|arm|image \
+	OdroidXU3||arm|image \
 	Rockchip|MiQi|arm|image \
+	Rockchip|OdroidGoAdvance|arm|image \
 	Rockchip|RK3328|arm|image \
 	Rockchip|RK3399|arm|image \
 	Rockchip|TinkerBoard|arm|image \
 	RPi|Gamegirl|arm|image \
-	RPi|GPICase|arm|noobs \
-	RPi|RPi|arm|noobs \
-	RPi|RPi2|arm|noobs \
-	RPi|RPi4|arm|noobs \
+	RPi|GPICase|arm|image \
+	RPi|RPi|arm|image \
+	RPi|RPi2|arm|image \
+	RPi|RPi4|aarch|image \
+	RPi|RPi4|arm|image \
 	Qualcomm|Dragonboard|arm|image \
-	NXP|iMX6|arm|image \
-        L4T|Switch|aarch64|image \
 	"
 
 # set the number of total build jobs and initialize counter for current build job
@@ -285,8 +288,8 @@ do
 		[ "${DASHBOARD_MODE}" = "yes" ] && echo "done!"
 
 		# move release files to the folder
-		[ "${DASHBOARD_MODE}" = "yes" ] && echo -n "Moving release files (.img.gz, .kernel, .system, -noobs.tar) to subfolder..."
-		for file in Lakka-${target_name}-*{.img.gz,-noobs.tar,.kernel,.system}*
+		[ "${DASHBOARD_MODE}" = "yes" ] && echo -n "Moving release files (.img.gz, .kernel, .system) to subfolder..."
+		for file in Lakka-${target_name}-*{.img.gz,.kernel,.system}*
 		do
 			[ -f "${file}" ] && mv ${v} ${file} ${target_name}/
 		done

@@ -44,6 +44,7 @@ RUN apt-get update \
 		gzip \
 		libjson-perl \
 		libncurses5-dev \
+		libssl-dev \
 		lzop \
 		make \
 		patch \

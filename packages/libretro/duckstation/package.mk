@@ -19,11 +19,11 @@
 ################################################################################
 
 PKG_NAME="duckstation"
-PKG_VERSION="d1a42df"
+PKG_VERSION="7c964e1"
 PKG_REV="1"
 PKG_ARCH="x86_64 arm aarch64"
 PKG_LICENSE="GPLv3"
-PKG_SITE="https://github.com/stenzek/duckstation"
+PKG_SITE="https://github.com/libretro/duckstation"
 PKG_URL="$PKG_SITE.git"
 PKG_DEPENDS_TARGET="toolchain"
 PKG_PRIORITY="optional"
@@ -35,8 +35,21 @@ PKG_TOOLCHAIN="cmake-make"
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
+if [ "$OPENGL_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET+=" $OPENGL"
+fi
+
+if [ "$OPENGLES_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET+=" $OPENGLES"
+fi
+
+if [ "$VULKAN_SUPPORT" = "yes" ]; then
+  PKG_DEPENDS_TARGET+=" $VULKAN"
+fi
+
 PKG_CMAKE_OPTS_TARGET="-DCMAKE_BUILD_TYPE=Release \
-		       -DBUILD_LIBRETRO_CORE=ON"
+                       -DUSE_DRMKMS=ON \
+                       -DBUILD_LIBRETRO_CORE=ON"
 
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro

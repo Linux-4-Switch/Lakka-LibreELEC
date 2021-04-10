@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="yabause"
-PKG_VERSION="f515e5a"
+PKG_VERSION="6fed372"
 PKG_REV="1"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv2"
@@ -44,7 +44,7 @@ if [ "$OPENGLES_SUPPORT" = yes ]; then
 fi
 
 make_target() {
-  if [ "$ARCH" = "arm" ]; then
+  if [ "$ARCH" = "arm" -o "$ARCH" = "aarch64" ]; then
     make -C yabause/src/libretro HAVE_SSE=0
   else
     make -C yabause/src/libretro

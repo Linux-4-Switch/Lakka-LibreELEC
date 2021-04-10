@@ -15,6 +15,7 @@
         elif [ "$DEVICE" = "RPi4" ]; then
           TARGET_CPU="cortex-a72"
           TARGET_CPU_FLAGS="+crc"
+          VULKAN="vulkan-loader"
         fi
 
         # TARGET_FLOAT:
@@ -41,14 +42,11 @@
           TARGET_CPU="cortex-a72"
           TARGET_CPU_FLAGS="+crc"
           TARGET_FPU="neon-fp-armv8"
+          VULKAN="vulkan-loader"
         fi
         TARGET_FLOAT="hard"
         TARGET_FEATURES="64bit"
         KERNEL_TARGET="Image"
-
-        # Exclude non-building cores
-        LIBRETRO_CORES="${LIBRETRO_CORES// mame2015 /}"
-        LIBRETRO_CORES="${LIBRETRO_CORES// yabause /}"
         ;;
     esac
 

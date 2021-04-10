@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="5e551dd"
+PKG_VERSION="8c08b531"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
@@ -35,6 +35,8 @@ PKG_AUTORECONF="no"
 
 if [ "$PROJECT" == "Generic_VK_nvidia" ]; then
   PKG_DEPENDS_TARGET+=" slang-shaders"
+elif [ "$DEVICE" == "RPi4" ]; then
+  PKG_DEPENDS_TARGET+=" slang-shaders glsl-shaders"
 else
   PKG_DEPENDS_TARGET+=" glsl-shaders"
 fi
@@ -48,7 +50,7 @@ if [ "$OPENGL_SUPPORT" = yes ]; then
 fi
 
 if [ "$VULKAN_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET+=" $VULKAN vulkan-loader"
+  PKG_DEPENDS_TARGET+=" $VULKAN"
 fi
 
 if [ "$SAMBA_SUPPORT" = yes ]; then
@@ -76,8 +78,6 @@ RETROARCH_GL=""
 if [ "$DEVICE" == "OdroidGoAdvance" ]; then
   PKG_DEPENDS_TARGET+=" librga libpng"
   RETROARCH_GL="--enable-kms --enable-odroidgo2 --disable-x11 --disable-wayland --enable-opengles --enable-opengles3 --disable-mali_fbdev"
-elif [ "$VULKAN" == "nvidia-driver" ]; then
-  RETROARCH_GL="--enable-vulkan --disable-x11 --disable-kms --disable-egl"
 elif [ "$OPENGL_SUPPORT" == "yes" ]; then
   RETROARCH_GL="--enable-kms"
 elif [ "$OPENGLES" == "odroidc1-mali" ] || [ "$OPENGLES" == "opengl-meson" ] || [ "$OPENGLES" == "opengl-meson8" ] || [ "$OPENGLES" == "opengl-meson-t82x" ] || [ "$OPENGLES" == "allwinner-fb-mali" ]; then
@@ -94,6 +94,9 @@ elif [ "$OPENGLES" == "mesa" ]; then
   else
     RETROARCH_GL="--enable-opengles --enable-kms --disable-x11"
   fi
+fi
+if [ "$VULKAN_SUPPORT" = "yes" ]; then
+  RETROARCH_GL+=" --enable-vulkan"
 fi
 
 RETROARCH_NEON=""
@@ -116,6 +119,7 @@ PKG_CONFIGURE_OPTS_TARGET="--disable-vg \
                            --enable-freetype \
                            --enable-translate \
                            --enable-cdrom \
+                           --enable-command \
                            --datarootdir=$SYSROOT_PREFIX/usr/share" # don't use host /usr/share!
 
 pre_configure_target() {
@@ -193,11 +197,7 @@ makeinstall_target() {
   sed -i -e "s/# video_fullscreen = false/video_fullscreen = true/" $INSTALL/etc/retroarch.cfg
 
   # Audio
-  if [ "$DEVICE" = "RPi4" ]; then
-    sed -i -e "s/# audio_driver =/audio_driver = \"alsa\"/" $INSTALL/etc/retroarch.cfg
-  else
-    sed -i -e "s/# audio_driver =/audio_driver = \"alsathread\"/" $INSTALL/etc/retroarch.cfg
-  fi
+  sed -i -e "s/# audio_driver =/audio_driver = \"alsathread\"/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# audio_filter_dir =/audio_filter_dir =\/usr\/share\/audio_filters/" $INSTALL/etc/retroarch.cfg
   if [ "$PROJECT" = "OdroidXU3" -o "$DEVICE" = "RPi4" ]; then # workaround the 55fps bug + fix no audio for RPi4
     sed -i -e "s/# audio_out_rate = 48000/audio_out_rate = 44100/" $INSTALL/etc/retroarch.cfg

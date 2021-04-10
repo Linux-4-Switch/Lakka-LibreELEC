@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="uae4arm"
-PKG_VERSION="920f779"
+PKG_VERSION="a0e51f6"
 PKG_REV="1"
 PKG_ARCH="arm"
 PKG_LICENSE="GPL"
@@ -48,4 +48,5 @@ make_target() {
 makeinstall_target() {
   mkdir -p $INSTALL/usr/lib/libretro
   cp uae4arm_libretro.so $INSTALL/usr/lib/libretro/
+  cp capsimg.so $INSTALL/usr/lib/
 }

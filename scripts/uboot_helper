@@ -173,11 +173,19 @@ devices = \
     'OdroidGoAdvance': {
       'odroidgo2': {
         'dtb': 'rk3326-odroidgo2-linux.dtb',
-        'config': 'odroidgo2_defconfig'
+        'config': 'odroidgoa_defconfig'
       },
       'rg351p': {
         'dtb': 'rk3326-rg351p-linux.dtb',
-        'config': 'odroidgo2_defconfig'
+        'config': 'odroidgoa_defconfig'
+      },
+      'rg351v': {
+        'dtb': 'rk3326-rg351v-linux.dtb',
+        'config': 'odroidgoa_defconfig'
+      },
+      'gameforce-chi': {
+        'dtb': 'rk3326-gameforce-linux.dtb',
+        'config': 'odroidgoa_defconfig'
       },
     },
     'RK3328': {
