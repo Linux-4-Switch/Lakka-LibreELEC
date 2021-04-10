@@ -18,35 +18,34 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="L4T"
-PKG_VERSION=""
-PKG_REV="1"
+PKG_NAME="usb-gadget-scripts"
+PKG_VERSION="1"
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="freetype libdrm pixman $OPENGL libepoxy glu retroarch $LIBRETRO_CORES alsa-plugins libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr tegra-bsp"
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for L4T based systems"
-PKG_LONGDESC=""
+PKG_DEPENDS_HOST=""
+PKG_DEPENDS_TARGET="toolchain" 
+PKG_TOOLCHAIN="make"
 
-if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" joycond mergerfs rewritefs xbindkeys usb-gadget-scripts"
-fi
+makeinstall_target() {
+  mkdir -p $PKG_BUILD/install
+  mkdir -p $INSTALL
 
-PKG_IS_ADDON="no"
-PKG_AUTORECONF="no"
-
-post_install() {
-  enable_service xorg-configure-switch.service
-  enable_service var-bluetoothconfig.mount
-  #enable_service switch-set-mac-address.service
-  # enable_service switch-wifi-fix.service
-  #enable_service serial-console.service
-
-  #mkdir -p $INSTALL/usr/bin
-  #cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
-  #cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
+  cd $PKG_BUILD/install
+  mkdir -p usr/bin
+  mkdir -p usr/lib/systemd/system/multi-user.target.wants
+  cp $PKG_DIR/assets/usb-gadget.sh usr/bin/
+  chmod +x usr/bin/usb-gadget.sh
+  cp $PKG_DIR/assets/usb-gadget.service usr/lib/systemd/system/
+  cp $PKG_DIR/assets/usb-tty.service usr/lib/systemd/system/
+  cd usr/lib/systemd/system/
+  chmod +x *.service
+  ln -s usb-gadget.service multi-user.target.wants/usb-gadget.service
+  ln -s usb-tty.service multi-user.target.wants/usb-tty.service
+  cd ../../../../../
+  
+  cp -PRv install/* $INSTALL/ 
+    
 }
 
+make_target() {
+  :
+}

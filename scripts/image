@@ -219,16 +219,28 @@ for MOD in $(find ${INSTALL}/usr/lib/kernel-overlays/ -type f -name *.ko); do
 done
 
 if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
-  mkdir -p ${INSTALL}/var/lib/
-  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/{modules,firmware} ${INSTALL}/var/lib/
-  mv ${INSTALL}/var/firmware/* ${INSTALL}/var/lib/firmware && rm -r ${INSTALL}/var/firmware
+  #remove if glvnd is properly fixed
+  PWD=$(pwd)
+  rm ${INSTALL}/usr/lib/libGL.so.1
+  cd ${INSTALL}/usr/lib/
+  ln -s libGLX_nvidia.so.0 libGL.so.1
+  cd $PWD
+  PWD=""
+  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/modules ${INSTALL}/usr/lib/
+  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/brcm/* ${INSTALL}/usr/lib/firmware/brcm/
+  rm -r ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/brcm
+  mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/* ${INSTALL}/usr/lib/firmware/
+  rm -r ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware
+  cp -PR ${PROJECT_DIR}/${PROJECT}/devices/${DEVICE}/firmwares/files/* ${INSTALL}/usr/lib/firmware/
 fi
 
-# Symlink overlayed modules to /usr/lib/modules
-ln -sT /var/lib/modules ${INSTALL}/usr/lib/modules
+if [ ! "${BOOTLOADER}" = "switch-bootloader" ]; then
+  # Symlink overlayed modules to /usr/lib/modules
+  ln -sT /var/lib/modules ${INSTALL}/usr/lib/modules
 
-# Symlink overlayed firmware to /usr/lib/firmware
-ln -sT /var/lib/firmware ${INSTALL}/usr/lib/firmware
+  # Symlink overlayed firmware to /usr/lib/firmware
+  ln -sT /var/lib/firmware ${INSTALL}/usr/lib/firmware
+fi
 
 # Make target dir
 mkdir -p ${TARGET_IMG}
@@ -343,7 +355,9 @@ if [ "${1}" = "release" -o "${1}" = "mkimage" -o "${1}" = "noobs" ]; then
   ( cd ${TARGET_IMG}
     sha256sum ${IMAGE_NAME}.tar > ${IMAGE_NAME}.tar.sha256
   )
-
+  if  [ "${BOOTLOADER}" = "switch-bootloader" ]; then
+    exit 0
+  fi
   # Create image files if requested
   if [[ ( "${1}" = "noobs" || "${1}" = "mkimage" ) && -n "${BOOTLOADER}" ]]; then
     UUID_SYSTEM="$(date '+%d%m')-$(date '+%M%S')"
@@ -372,9 +386,7 @@ if [ "${1}" = "release" -o "${1}" = "mkimage" -o "${1}" = "noobs" ]; then
         do_mkimage "${IMAGE_NAME}-${UBOOT_SYSTEM}"
       done
     else
-      if ! [ "${BOOTLOADER}" = "switch-bootloader" ]; then
-        do_mkimage
-      fi
+      do_mkimage
     fi
   fi
  # Cleanup release dir

@@ -18,35 +18,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="L4T"
-PKG_VERSION=""
-PKG_REV="1"
+PKG_NAME="xbindkeys"
+PKG_VERSION="1.8.6"
+PKG_URL="https://www.nongnu.org/xbindkeys/$PKG_NAME-$PKG_VERSION.tar.gz"
+PKG_SHORTDESC="xbindkeys is a program that allows you to launch shell commands with your keyboard or your mouse under X Window. It links commands to keys or mouse buttons, using a configuration file. It's independant of the window manager and can capture all keyboard keys (ex: Power, Wake...)."
 PKG_ARCH="any"
-PKG_LICENSE="GPL"
-PKG_SITE="https://github.com/lakkatv/Lakka"
-PKG_URL=""
-PKG_DEPENDS_TARGET="freetype libdrm pixman $OPENGL libepoxy glu retroarch $LIBRETRO_CORES alsa-plugins libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr tegra-bsp"
-PKG_PRIORITY="optional"
-PKG_SECTION="virtual"
-PKG_SHORTDESC="Lakka metapackage for L4T based systems"
-PKG_LONGDESC=""
-
-if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" joycond mergerfs rewritefs xbindkeys usb-gadget-scripts"
-fi
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
 
-post_install() {
-  enable_service xorg-configure-switch.service
-  enable_service var-bluetoothconfig.mount
-  #enable_service switch-set-mac-address.service
-  # enable_service switch-wifi-fix.service
-  #enable_service serial-console.service
-
-  #mkdir -p $INSTALL/usr/bin
-  #cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
-  #cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
-}
-
+PKG_CONFIGURE_OPTS_TARGET="--disable-guile"

@@ -1,0 +1,21 @@
+[Unit]
+Description=Start TTY on ttyGS0
+After=usb-gadget.service
+
+[Service]
+WorkingDirectory=/storage
+Environment="ENV=/etc/profile"
+ExecStartPre=/bin/sh -c 'echo -en "\033[?25h"'
+ExecStart=/bin/sh
+Restart=always
+RestartSec=0
+StandardInput=tty
+TTYPath=/dev/ttyGS0
+KillMode=process
+IgnoreSIGPIPE=no
+# bash ignores SIGTERM
+KillSignal=SIGHUP
+
+[Install]
+WantedBy=multi-user.target
+
