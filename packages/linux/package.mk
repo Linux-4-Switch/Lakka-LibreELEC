@@ -46,7 +46,8 @@ case "$LINUX" in
     ;;
   switch)
     PKG_VERSION="switch"
-    PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$PKG_VERSION/l4t-kernel-4.9-$PKG_VERSION.tar.gz"
+    PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/lakka-3.3.0/l4t-kernel-4.9-lakka-3.3.0.tar.gz"
+    #PKG_SOURCE_DIR="switch"
     PKG_PATCH_DIRS=""
     ;;
 
@@ -184,8 +185,9 @@ makeinstall_host() {
       INSTALL_HDR_PATH=dest \
       headers_install
   fi
+
   mkdir -p $SYSROOT_PREFIX/usr/include
-    cp -R dest/include/* $SYSROOT_PREFIX/usr/include
+  cp -R dest/include/* $SYSROOT_PREFIX/usr/include
 }
 
 pre_make_target() {

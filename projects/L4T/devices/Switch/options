@@ -3,7 +3,4 @@ OPENGL="mesa"
 VULKAN="no"
 
 LINUX="switch"
-KERNEL_VERSION="l4t-rel32.4.4"
-KERNEL_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/$KERNEL_VERSION/l4t-kernel-4.9-$KERNEL_VERSION.tar.gz"
-
 BOOTLOADER="switch-bootloader" # this is a fake bootloader since coreboot and u-boot are sideloaded
