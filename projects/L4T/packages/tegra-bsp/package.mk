@@ -19,7 +19,11 @@
 ################################################################################
 
 PKG_NAME="tegra-bsp"
-PKG_VERSION="32.4.4"
+if [ $DEVICE == "Switch" ]; then
+  PKG_VERSION="32.4.4"
+else
+  PKG_VERSION="32.3.1"
+fi
 PKG_ARCH="any"
 PKG_DEPENDS_HOST=""
 PKG_DEPENDS_TARGET="toolchain" 
@@ -28,8 +32,11 @@ case "$DEVICE" in
   tx2|xavier|agx)
     PKG_URL="https://developer.nvidia.com/embedded/L4T/r32_Release_v4.4/r32_Release_v4.4-GMC3/T186/Tegra186_Linux_R32.4.4_aarch64.tbz2"
     ;;
-  tx1|nano|Switch)
+  tx1|nano)
     PKG_URL="https://developer.nvidia.com/embedded/L4T/r32_Release_v4.4/r32_Release_v4.4-GMC3/T210/Tegra210_Linux_R32.4.4_aarch64.tbz2"
+    ;;
+  Switch)
+    PKG_URL="https://developer.nvidia.com/embedded/dlc/r32-3-1_Release_v1.0/t210ref_release_aarch64/Tegra210_Linux_R32.3.1_aarch64.tbz2"
     ;;
 esac
 PKG_TOOLCHAIN="make"
