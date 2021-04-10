@@ -231,6 +231,7 @@ if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
   rm -r ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/brcm
   mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/* ${INSTALL}/usr/lib/firmware/
   rm -r ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware
+  cp -PR ${PROJECT_DIR}/${PROJECT}/devices/${DEVICE}/firmwares/files/* ${INSTALL}/usr/lib/firmware/
 fi
 
 if [ ! "${BOOTLOADER}" = "switch-bootloader" ]; then
