@@ -88,10 +88,15 @@ makeinstall_target() {
   cd firmware
   rm -r gm20b
   ln -sfn tegra21x gm20b
-  cd ../../../../
+  cd ../../../
+  cd etc
+  ln -sfn asound.conf.tegrasndt210ref asound.conf
+  cd ../../
   
   cp -PRv install/* $INSTALL/ 
-  
+  cp -Pv $PKG_DIR/assets/alsa-fix.service $INSTALL/usr/lib/systemd/system/
+  mkdir -p $INSTALL/usr/lib/systemd/system/multi-user.target.wants
+  ln -s $INSTALL/usr/lib/systemd/system/alsa-fix.service $INSTALL/usr/lib/systemd/system/multi-user.target.wants/alsa-fix.service
   cat $PKG_DIR/assets/50-joysticks.conf >> $INSTALL/etc/X11/xorg.conf
   
 }

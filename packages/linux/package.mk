@@ -306,7 +306,7 @@ make_target() {
 }
 
 makeinstall_target() {
-  if [ ! "$BOOTLOADER" = "switch-bootloader" ]; then
+  if [ "$BOOTLOADER" = "switch-bootloader" ]; then
     kernel_make INSTALL_MOD_PATH=$INSTALL/usr modules_install
     rm -f $INSTALL/usr/lib/modules/*/build
     rm -f $INSTALL/usr/lib/modules/*/source
