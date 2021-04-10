@@ -306,15 +306,15 @@ make_target() {
 }
 
 makeinstall_target() {
-  if [ "$BOOTLOADER" = "switch-bootloader" ]; then
-    kernel_make INSTALL_MOD_PATH=$INSTALL/usr modules_install
-    rm -f $INSTALL/usr/lib/modules/*/build
-    rm -f $INSTALL/usr/lib/modules/*/source
-  else
-    kernel_make INSTALL_MOD_PATH=$INSTALL/$(get_kernel_overlay_dir) modules_install
-    rm -f $INSTALL/$(get_kernel_overlay_dir)/lib/modules/*/build
-    rm -f $INSTALL/$(get_kernel_overlay_dir)/lib/modules/*/source
-  fi
+  #if [ "$BOOTLOADER" = "switch-bootloader" ]; then
+  #  kernel_make INSTALL_MOD_PATH=$INSTALL/usr modules_install
+  #  rm -f $INSTALL/usr/lib/modules/*/build
+  #  rm -f $INSTALL/usr/lib/modules/*/source
+  #else
+  kernel_make INSTALL_MOD_PATH=$INSTALL/$(get_kernel_overlay_dir) modules_install
+  rm -f $INSTALL/$(get_kernel_overlay_dir)/lib/modules/*/build
+  rm -f $INSTALL/$(get_kernel_overlay_dir)/lib/modules/*/source
+  #fi
   
   if [ "$BOOTLOADER" = "switch-bootloader" ]; then
     mkdir -p $INSTALL/usr/share/bootloader/boot/

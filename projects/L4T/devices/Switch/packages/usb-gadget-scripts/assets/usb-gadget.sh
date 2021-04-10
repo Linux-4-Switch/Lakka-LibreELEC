@@ -1,3 +1,4 @@
+
 manufacturer="Nintendo"
 product="Switch(Lakka)"
 #vid/pid defaults if not ran as attackmode.... Defaults are default for linux
@@ -10,6 +11,8 @@ udc="700d0000.xudc"
 
 create_gadget_framework() {
 	#create basic gadget framework to work with
+    mkdir -p $gadget_config
+    mount -t configfs none $gadget_config
 	mkdir -p $gadget_config/usb_gadget/g
 	chmod -R 666 $gadget_config/usb_gadget/g
 	echo $vid_default > $gadget_config/usb_gadget/g/idVendor  
@@ -37,8 +40,6 @@ finalize_gadget_framework() {
 	udevadm settle -t 5 || :
 }
 
-mkdir -p $gadget_config
-mount -t configfs none $gadget_config
 create_gadget_framework
 create_serial
 finalize_gadget_framework
