@@ -12,6 +12,9 @@ PKG_TOOLCHAIN="manual"
 
 makeinstall_target() {
   mkdir -p ${INSTALL}/usr/share/alsa/
+  if [ "$DEVICE" == "Switch" ]; then
+    sed -i '0,/Directory "${CardDriver}"/{s/Directory "${CardDriver}"/Directory "${CardLongName}"/}' ${PKG_BUILD}/ucm2/ucm.conf
+  fi
   cp -PR ${PKG_BUILD}/ucm2 ${INSTALL}/usr/share/alsa/
   safe_remove ${INSTALL}/usr/share/alsa/ucm2/README.md
 }
