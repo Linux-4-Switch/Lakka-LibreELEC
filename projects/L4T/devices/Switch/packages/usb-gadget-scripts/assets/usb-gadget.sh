@@ -1,18 +1,19 @@
+#!/bin/bash
 
 manufacturer="Nintendo"
 product="Switch(Lakka)"
 #vid/pid defaults if not ran as attackmode.... Defaults are default for linux
-vid_default="0x1d6b" #linux foundation
-pid_default="0x0104" #Multifunction Gadget
-serialnumber="00000001"
+vid_default="0x057e" #Nintendo
+pid_default="0x2001" #Switch pid+1
+serialnumber="00000000"
 
 gadget_config="/sys/kernel/config"
 udc="700d0000.xudc"
 
 create_gadget_framework() {
 	#create basic gadget framework to work with
-    mkdir -p $gadget_config
-    mount -t configfs none $gadget_config
+        mkdir -p $gadget_config
+        mount -t configfs none $gadget_config
 	mkdir -p $gadget_config/usb_gadget/g
 	chmod -R 666 $gadget_config/usb_gadget/g
 	echo $vid_default > $gadget_config/usb_gadget/g/idVendor  

@@ -32,7 +32,7 @@ PKG_SHORTDESC="Lakka metapackage for L4T based systems"
 PKG_LONGDESC=""
 
 if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" joycond mergerfs rewritefs xbindkeys" # usb-gadget-scripts"
+  PKG_DEPENDS_TARGET+=" joycond mergerfs rewritefs xbindkeys usb-gadget-scripts xdotool"
 fi
 
 PKG_IS_ADDON="no"

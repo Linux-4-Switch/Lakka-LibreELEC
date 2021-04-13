@@ -33,13 +33,12 @@ makeinstall_target() {
   mkdir -p usr/bin
   mkdir -p usr/lib/systemd/system/multi-user.target.wants
   cp $PKG_DIR/assets/usb-gadget.sh usr/bin/
-  chmod +x usr/bin/usb-gadget.sh
   cp $PKG_DIR/assets/usb-gadget.service usr/lib/systemd/system/
   cp $PKG_DIR/assets/usb-tty.service usr/lib/systemd/system/
   cd usr/lib/systemd/system/
   chmod +x *.service
-  ln -s usb-gadget.service multi-user.target.wants/usb-gadget.service
-  ln -s usb-tty.service multi-user.target.wants/usb-tty.service
+  #ln -s usb-gadget.service multi-user.target.wants/usb-gadget.service
+  #ln -s usb-tty.service multi-user.target.wants/usb-tty.service
   cd ../../../../../
   
   cp -PRv install/* $INSTALL/ 
