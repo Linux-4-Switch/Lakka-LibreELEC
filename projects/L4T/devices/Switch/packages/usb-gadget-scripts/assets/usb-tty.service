@@ -3,14 +3,11 @@ Description=Start TTY on ttyGS0
 After=usb-gadget.service
 
 [Service]
+Type=oneshot
 WorkingDirectory=/storage
 Environment="ENV=/etc/profile"
-ExecStartPre=/bin/sh -c 'echo -en "\033[?25h"'
-ExecStart=/bin/sh
+ExecStart=/bin/sh < /dev/ttyGS0 > /dev/ttyGS0
 Restart=always
-RestartSec=0
-StandardInput=tty
-TTYPath=/dev/ttyGS0
 KillMode=process
 IgnoreSIGPIPE=no
 # bash ignores SIGTERM

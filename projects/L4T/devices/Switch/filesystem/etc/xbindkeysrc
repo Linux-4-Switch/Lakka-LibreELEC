@@ -70,8 +70,14 @@
 ##################################
 
 # Increase volume
-"xdotool keydown KP_Add sleep 0.1 keyup KP_Add"
+"xdotool keydown KP_Add && sleep 0.1 && xdotool keyup KP_Add"
    XF86AudioRaiseVolume
 
-"xdotool keydown KP_Subtract sleep 0.1 keyup KP_Subtract"
+"xdotool keydown KP_Subtract && sleep 0.1 && xdotool keyup KP_Subtract"
    XF86AudioLowerVolume
+
+#"/bin/bash -c echo volume up >> /storage/volume_press.txt"
+#   XF86AudioRaiseVolume
+
+#"/bin/bash -c echo volume down >> /storage/volume_press.txt"
+#   XF86AudioLowerVolume

@@ -18,7 +18,7 @@
 ################################################################################
 
 PKG_NAME="xdotool"
-PKG_VERSION="08c8e2d6cad60a69ce415499e34865157a1b66fd"
+PKG_VERSION="a47f156d7423aa69e6b3b54cf68c663f10d19a88"
 PKG_ARCH="any"
 PKG_LICENSE="GPL"
 PKG_SITE="https://github.com/jordansissel/xdotool"
