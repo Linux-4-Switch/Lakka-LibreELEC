@@ -19,13 +19,11 @@
 ################################################################################
 
 PKG_NAME="ishiiruka"
-PKG_VERSION="60c9a09"
+PKG_VERSION="fd31bbb7"
 PKG_REV="1"
-PKG_ARCH="x86_64"
 PKG_LICENSE="GPLv2"
 PKG_SITE="https://github.com/lakka-switch/Ishiiruka"
-PKG_GIT_BRANCH="l4t"
-PKG_GIT_URL="$PKG_SITE"
+PKG_URL="https://git.m4xw.net/Switch/Lakka/Ishiiruka/-/archive/fd31bbb7fb73b73db546fc6df2276f0fd7f292bd/Ishiiruka-fd31bbb7fb73b73db546fc6df2276f0fd7f292bd.tar.gz"
 PKG_DEPENDS_TARGET="toolchain cmake:host libusb ffmpeg libevdev $OPENGL"
 PKG_PRIORITY="optional"
 PKG_SECTION="libretro"
@@ -40,7 +38,7 @@ if [ "$BLUETOOTH_SUPPORT" = "yes" ]; then
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET bluez"
 fi
 
-PKG_CMAKE_OPTS_TARGET="-DLIBRETRO=ON -DENABLE_WX=OFF"
+PKG_CMAKE_OPTS_TARGET="-DLIBRETRO=ON -DENABLE_WX=OFF -DENABLE_VULKAN=ON"
 PKG_MAKE_OPTS_TARGET="ishiiruka_libretro"
 
 pre_make_target() {

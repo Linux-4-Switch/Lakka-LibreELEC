@@ -9,7 +9,7 @@ Environment=HOME=/storage DISPLAY=:0
 EnvironmentFile=-/run/libreelec/retroarch.conf
 EnvironmentFile=-/storage/.cache/services/retroarch.conf
 ExecStartPre=-/usr/lib/retroarch/retroarch-config
-ExecStart=/usr/bin/retroarch
+ExecStart=/usr/bin/retroarch -v
 # keep KillMode=process unless there is no good reason to switch to cgroup
 KillMode=process
 TimeoutStopSec=10

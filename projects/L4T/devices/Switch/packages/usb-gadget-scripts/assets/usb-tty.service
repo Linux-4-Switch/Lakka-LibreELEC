@@ -7,7 +7,7 @@ Type=oneshot
 WorkingDirectory=/storage
 Environment="ENV=/etc/profile"
 ExecStart=/bin/sh < /dev/ttyGS0 > /dev/ttyGS0
-Restart=always
+Restart=never
 KillMode=process
 IgnoreSIGPIPE=no
 # bash ignores SIGTERM

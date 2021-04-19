@@ -32,7 +32,7 @@ PKG_SHORTDESC="Lakka metapackage for L4T based systems"
 PKG_LONGDESC=""
 
 if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" joycond mergerfs rewritefs xbindkeys usb-gadget-scripts xdotool"
+  PKG_DEPENDS_TARGET+=" ishiiruka joycond mergerfs rewritefs vulkan-loader" #vulkan-validationlayers spirv-tools vulkan-tools"
 fi
 
 PKG_IS_ADDON="no"
@@ -43,11 +43,11 @@ post_install() {
     enable_service xorg-configure-switch.service
     enable_service var-bluetoothconfig.mount
     #enable_service switch-set-mac-address.service
-    # enable_service switch-wifi-fix.service
+    #enable_service switch-wifi-fix.service
     #enable_service serial-console.service
 
-    #mkdir -p $INSTALL/usr/bin
-    #cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
+    mkdir -p $INSTALL/usr/bin
+    cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
     #cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
   fi
 }

@@ -20,7 +20,7 @@
 
 PKG_NAME="retroarch"
 #PKG_VERSION="5e551dd"
-PKG_VERSION="8c08b531"
+PKG_VERSION="9812f36"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
@@ -33,6 +33,7 @@ PKG_LONGDESC="RetroArch is the reference frontend for the libretro API. Popular 
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
+
 
 if [ "$PROJECT" == "Generic_VK_nvidia" ]; then
   PKG_DEPENDS_TARGET+=" slang-shaders"
@@ -104,7 +105,7 @@ fi
 RETROARCH_NEON=""
 
 if [ "$PROJECT" = "L4T" ]; then
-   RETROARCH_GL="$RETROARCH_GL --disable-vulkan --disable-egl --disable-vulkan_display --enable-opengl"
+   RETROARCH_GL="$RETROARCH_GL --enable-vulkan --disable-egl --disable-vulkan_display --enable-opengl"
    RETROARCH_GL=${RETROARCH_GL//--enable-opengles/--disable-gles}
    RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
    RETROARCH_GL=${RETROARCH_GL//--disable-x11/--enable-x11}
