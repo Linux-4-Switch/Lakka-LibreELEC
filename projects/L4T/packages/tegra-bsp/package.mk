@@ -100,7 +100,7 @@ makeinstall_target() {
   ln -sfn asound.conf.tegrasndt210ref asound.conf
   cd vulkan/icd.d
   rm nvidia_icd.json
-  ln -sfn /usr/lib/aarch64-linux-gnu/tegra/nvidia_icd.json nvidia_icd.json
+  ln -sfn /usr/lib/nvidia_icd.json nvidia_icd.json
   cd ../../../../
   
   cp -PRv install/* $INSTALL/ 
