@@ -67,7 +67,7 @@ makeinstall_target() {
   rm -r usr/lib/{tegra-egl,tegra,aarch64-linux-gnu}
 
   # Remove unneeded files
-  rm -rf usr/lib/ld.so.conf usr/lib/ubiquity usr/lib/nvidia*.json \
+  rm -rf usr/lib/ld.so.conf usr/lib/ubiquity \
 	etc/{systemd,NetworkManager,fstab,lightdm,nv-oem-config.conf.t210,skel,wpa_supplicant.conf,enctune.conf,nv,nvphsd.conf,nvpmodel,xdg}
   
   # Move udev from etc/ to usr/lib/
@@ -98,7 +98,10 @@ makeinstall_target() {
   cd ../../../
   cd etc
   ln -sfn asound.conf.tegrasndt210ref asound.conf
-  cd ../../
+  cd vulkan/icd.d
+  rm nvidia_icd.json
+  ln -sfn /usr/lib/aarch64-linux-gnu/tegra/nvidia_icd.json nvidia_icd.json
+  cd ../../../../
   
   cp -PRv install/* $INSTALL/ 
   cp -Pv $PKG_DIR/assets/alsa-fix.service $INSTALL/usr/lib/systemd/system/
