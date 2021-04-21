@@ -1,0 +1,25 @@
+diff -Naur jetson-ffmpeg-1/CMakeLists.txt jetson-ffmpeg-2/CMakeLists.txt
+--- jetson-ffmpeg-1/CMakeLists.txt	2021-04-21 15:28:32.788161145 -0700
++++ jetson-ffmpeg-2/CMakeLists.txt	2021-04-21 15:30:21.531595239 -0700
+@@ -4,15 +4,15 @@
+ set(CMAKE_C_FLAGS“$ {CMAKE_C_FLAGS} -fPIC”)
+ set(CMAKE_CXX_FLAGS“$ {CMAKE_CXX_FLAGS} -fPIC”)
+ #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/lib")
+-#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/usr/lib/aarch64-linux-gnu")
+-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/usr/lib/aarch64-linux-gnu/tegra")
++#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/usr/lib/")
++set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/usr/lib/")
+ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-rpath-link=/usr/local/cuda/lib64")
+ 
+-find_library(LIB_NVBUF nvbuf_utils PATHS /usr/lib/aarch64-linux-gnu/tegra)
+-find_library(LIB_V4L2 v4l2)
++#find_library(LIB_NVBUF nvbuf_utils PATHS /usr/lib/)
++#find_library(LIB_V4L2 v4l2)
+ find_package (Threads)
+-#find_library(LIB_DRM drm PATHS /usr/lib/aarch64-linux-gnu/tegra)
+-#find_library(LIB_EGL EGL PATHS /usr/lib/aarch64-linux-gnu/tegra)
++#find_library(LIB_DRM drm PATHS /usr/lib/)
++#find_library(LIB_EGL EGL PATHS /usr/lib/)
+ 
+ add_library(nvmpi SHARED
+     nvmpi_dec.cpp

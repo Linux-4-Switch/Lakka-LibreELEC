@@ -10,6 +10,9 @@ PKG_LICENSE="LGPLv2.1+"
 PKG_SITE="https://ffmpeg.org"
 PKG_URL="https://github.com/xbmc/FFmpeg/archive/${PKG_VERSION}.tar.gz"
 PKG_DEPENDS_TARGET="toolchain zlib bzip2 openssl speex"
+if [ $DEVICE == "Switch" ]; then
+  PKG_DEPENDS_TARGET+=" jetson-ffmpeg"
+fi
 PKG_LONGDESC="FFmpeg is a complete, cross-platform solution to record, convert and stream audio and video."
 PKG_BUILD_FLAGS="-gold"
 
@@ -53,6 +56,11 @@ if [ "$PROJECT" = "Allwinner" ]; then
   PKG_PATCH_DIRS+=" v4l2-request-api"
   PKG_DEPENDS_TARGET="$PKG_DEPENDS_TARGET libdrm systemd" # systemd is needed for libudev
   PKG_FFMPEG_V4L2_REQUEST="--enable-v4l2-request --enable-libudev --enable-libdrm"
+fi
+
+if [ "$DEVICE" = "Switch" ]; then
+  PKG_FFMPEG_JETSON_FFMPEG="--enable-nvmpi"
+  PKG_PATCH_DIRS+=" switch-ffmpeg"
 fi
 
 if build_with_debug; then
@@ -146,6 +154,7 @@ configure_target() {
               --enable-mdct \
               --enable-rdft \
               --disable-crystalhd \
+              $PKG_FFMPEG_JETSON_FFMPEG \
               $PKG_FFMPEG_V4L2 \
               $PKG_FFMPEG_VAAPI \
               $PKG_FFMPEG_VDPAU \
