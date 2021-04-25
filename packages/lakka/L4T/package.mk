@@ -32,7 +32,7 @@ PKG_SHORTDESC="Lakka metapackage for L4T based systems"
 PKG_LONGDESC=""
 
 if [ "$DEVICE" == "Switch" ]; then
-  PKG_DEPENDS_TARGET+=" ishiiruka joycond mergerfs rewritefs vulkan-loader" #vulkan-validationlayers spirv-tools vulkan-tools"
+  PKG_DEPENDS_TARGET+=" ishiiruka joycond mergerfs rewritefs vulkan-loader gdb" #vulkan-validationlayers spirv-tools vulkan-tools"
 fi
 
 PKG_IS_ADDON="no"
@@ -42,13 +42,18 @@ post_install() {
   if [ "$DEVICE" == "Switch" ]; then
     enable_service xorg-configure-switch.service
     enable_service var-bluetoothconfig.mount
-    #enable_service switch-set-mac-address.service
-    #enable_service switch-wifi-fix.service
-    #enable_service serial-console.service
+	enable_service pair-joycon.service
+    enable_service switch-set-mac-address.service
 
     mkdir -p $INSTALL/usr/bin
+    mkdir -p $INSTALL/usr/lib/udev/rules.d
+    
     cp -P $PKG_DIR/scripts/switch-wifi-fix $INSTALL/usr/bin
-    #cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
+    cp -P $PKG_DIR/scripts/switch-set-mac-address $INSTALL/usr/bin
+    cp -P $PKG_DIR/scripts/pair-joycon.sh $INSTALL/usr/bin
+    
+    cp -P $PKG_DIR/scripts/dock_hotplug $INSTALL/usr/bin
+    cp -P $PKG_DIR/assets/93-dock_hotplug.rules $INSTALL/usr/lib/rules.d  
   fi
 }
 

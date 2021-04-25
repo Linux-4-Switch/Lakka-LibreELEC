@@ -105,9 +105,10 @@ fi
 RETROARCH_NEON=""
 
 if [ "$PROJECT" = "L4T" ]; then
-   RETROARCH_GL="$RETROARCH_GL --enable-vulkan --disable-egl --disable-vulkan_display --enable-opengl"
+   RETROARCH_GL="$RETROARCH_GL --enable-vulkan --disable-egl --enable-opengl --disable-vulkan_display"
    RETROARCH_GL=${RETROARCH_GL//--enable-opengles/--disable-gles}
    RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
+   RETROARCH_GL=${RETROARCH_GL//--enable-wayland/--disable-wayland}
    RETROARCH_GL=${RETROARCH_GL//--disable-x11/--enable-x11}
 fi
 
@@ -157,7 +158,7 @@ make_target() {
   #if [ "$DEVICE" = "Switch" ]; then
   #  make V=1 HAVE_LAKKA=1 HAVE_LAKKA_SWITCH=1 HAVE_ZARCH=0
   #else
-    make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0
+    make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 DEBUG=yes
   #fi
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C libretro-common/audio/dsp_filters compiler=$CC extra_flags="$CFLAGS"

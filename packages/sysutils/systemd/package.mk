@@ -128,17 +128,19 @@ post_makeinstall_target() {
   safe_remove $INSTALL/usr/lib/udev/rules.d/70-uaccess.rules
   safe_remove $INSTALL/usr/lib/udev/rules.d/71-seat.rules
   safe_remove $INSTALL/usr/lib/udev/rules.d/73-seat-late.rules
-
-  # remove getty units, we dont want a console
-  safe_remove $INSTALL/usr/lib/systemd/system/autovt@.service
-  safe_remove $INSTALL/usr/lib/systemd/system/console-getty.service
-  safe_remove $INSTALL/usr/lib/systemd/system/console-shell.service
-  safe_remove $INSTALL/usr/lib/systemd/system/container-getty@.service
-  safe_remove $INSTALL/usr/lib/systemd/system/getty.target
-  safe_remove $INSTALL/usr/lib/systemd/system/getty@.service
-  safe_remove $INSTALL/usr/lib/systemd/system/serial-getty@.service
-  safe_remove $INSTALL/usr/lib/systemd/system/*.target.wants/getty.target
-
+  # remove getty units, we dont want a console, Dont do this on Nintendo Switch,
+  # as we want these for usb tty. We might not need all of them, so adjust later.
+  if [ ! "$DEVICE" == "Switch" ]; then
+    safe_remove $INSTALL/usr/lib/systemd/system/autovt@.service
+    safe_remove $INSTALL/usr/lib/systemd/system/console-getty.service
+    safe_remove $INSTALL/usr/lib/systemd/system/console-shell.service
+    safe_remove $INSTALL/usr/lib/systemd/system/container-getty@.service
+    safe_remove $INSTALL/usr/lib/systemd/system/getty.target
+    safe_remove $INSTALL/usr/lib/systemd/system/getty@.service
+    safe_remove $INSTALL/usr/lib/systemd/system/serial-getty@.service
+    safe_remove $INSTALL/usr/lib/systemd/system/*.target.wants/getty.target
+  fi
+  
   # remove other notused or nonsense stuff (our /etc is ro)
   safe_remove $INSTALL/usr/lib/systemd/systemd-update-done
   safe_remove $INSTALL/usr/lib/systemd/system/systemd-update-done.service

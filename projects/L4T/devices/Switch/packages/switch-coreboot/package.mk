@@ -37,6 +37,7 @@ make_host() {
   export PATH=$TOOLCHAIN/lib/gcc-linaro-arm-linux-gnueabi/bin/:$PATH
   export C_INCLUDE_PATH="$TOOLCHAIN/include:$C_INCLUDE_PATH"
   export LIBRARY_PATH="$TOOLCHAIN/lib:$LIBRARY_PATH"
+  git submodule update --init --recursive
   make nintendo_switch_defconfig
   make iasl
   make tools

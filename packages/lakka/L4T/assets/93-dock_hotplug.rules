@@ -1,0 +1,2 @@
+ACTION=="change" KERNEL=="extcon0" RUN+="/usr/bin/dock-hotplug"
+ACTION=="add" KERNEL=="extcon0" RUN+="/usr/bin/dock-hotplug"
