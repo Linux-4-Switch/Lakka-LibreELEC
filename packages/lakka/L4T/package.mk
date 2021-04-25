@@ -18,43 +18,18 @@
 #  http://www.gnu.org/copyleft/gpl.html
 ################################################################################
 
-PKG_NAME="yabasanshiro"
-PKG_VERSION="db67d16"
-PKG_GIT_CLONE_BRANCH="yabasanshiro"
+PKG_NAME="L4T"
+PKG_VERSION=""
 PKG_REV="1"
-PKG_ARCH="arm aarch64"
-PKG_LICENSE="GPLv2"
-PKG_SITE="https://github.com/libretro/yabause"
-PKG_URL="$PKG_SITE.git"
-PKG_DEPENDS_TARGET="toolchain"
+PKG_ARCH="any"
+PKG_LICENSE="GPL"
+PKG_SITE="https://github.com/lakkatv/Lakka"
+PKG_URL=""
+PKG_DEPENDS_TARGET="freetype libdrm pixman $OPENGL libepoxy glu retroarch $LIBRETRO_CORES alsa-plugins alsa-ucm-conf libdrm libXext libXdamage libXfixes libXxf86vm libxcb libX11 libXrandr tegra-bsp vulkan-loader"
 PKG_PRIORITY="optional"
-PKG_SECTION="libretro"
-PKG_SHORTDESC="Port of YabaSanshiro to libretro."
-PKG_LONGDESC="Port of YabaSanshiro to libretro."
-PKG_TOOLCHAIN="make"
+PKG_SECTION="virtual"
+PKG_SHORTDESC="Lakka metapackage for L4T based systems"
+PKG_LONGDESC=""
 
 PKG_IS_ADDON="no"
 PKG_AUTORECONF="no"
-
-if [ "$OPENGL_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET+=" $OPENGL"
-fi
-
-if [ "$OPENGLES_SUPPORT" = yes ]; then
-  PKG_DEPENDS_TARGET+=" $OPENGLES"
-fi
-
-make_target() {
-  if [ "$ARCH" == "aarch64" ]; then
-    make -C yabause/src/libretro platform=arm64
-  elif [ "$ARCH" == "arm" ]; then
-    make -C yabause/src/libretro platform=unix-armv
-  else
-    make -C yabause/src/libretro
-  fi
-}
-
-makeinstall_target() {
-  mkdir -p $INSTALL/usr/lib/libretro
-  cp yabause/src/libretro/yabasanshiro_libretro.so $INSTALL/usr/lib/libretro/
-}
