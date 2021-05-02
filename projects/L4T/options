@@ -49,7 +49,7 @@
     PULSEAUDIO_SUPPORT="yes"
 
   # OpenGL(X) implementation to use (no / Mesa)
-    OPENGLES="no"
+    OPENGLES="mesa"
 
   # include uvesafb support (yes / no)
     UVESAFB_SUPPORT="no"
@@ -63,7 +63,7 @@
   # Xorg Graphic drivers to use (all / i915,i965,r200,r300,r600,nvidia,nouveau)
   # Space separated list is supported,
   # e.g. GRAPHIC_DRIVERS="i915 i965 r300 r600 radeonsi nvidia nouveau"
-    GRAPHIC_DRIVERS="nouveau tegra"
+    GRAPHIC_DRIVERS="nouveau"
 
   # KODI Player implementation to use (default / bcm2835-driver / libfslvpuwrap / libamcodec)
     KODIPLAYER_DRIVER="mesa"

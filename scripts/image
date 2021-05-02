@@ -220,12 +220,29 @@ done
 
 if [ "${BOOTLOADER}" = "switch-bootloader" ]; then
   #remove if glvnd is properly fixed
-  PWD=$(pwd)
-  rm ${INSTALL}/usr/lib/libGL.so.1
-  cd ${INSTALL}/usr/lib/
-  ln -s libGLX_nvidia.so.0 libGL.so.1
-  cd $PWD
-  PWD=""
+  #PWD=$(pwd)
+  #cd ${INSTALL}/usr/lib/
+  #rm libGL.so.1
+  #  rm libGLESv1_CM.so
+#  rm libGLESv1_CM.so.1
+#  rm libGLESv2.so
+#  rm libGLESv2.so.2
+#  rm libEGL.so
+#  rm libEGL.so.1
+#  rm libGLX.so
+#  rm libGLX.so.0
+  #ln -s libGLX_nvidia.so.0 libGL.so.1
+  #  ln -s libGLX_nvidia.so.0 libGLX.so
+#  ln -s libGLX_nvidia.so.0 libGLX.so.0
+#  ln -s libGLESv1_CM_nvidia.so.1 libGLESv1_CM.so
+#  ln -s libGLESv1_CM_nvidia.so.1 libGLESv1_CM.so.1
+#  ln -s libGLESv2_nvidia.so.2 libGLESv2.so
+#  ln -s libGLESv2_nvidia.so.2 libGLESv2.so.2
+#  ln -s libEGL_nvidia.so.0 libEGL.so
+#  ln -s libEGL_nvidia.so.0 libEGL.so.1
+#  cd $PWD
+#  PWD=""
+#  #keep when if/when glvnd is fixed
   mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/modules ${INSTALL}/usr/lib/
   mv ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/brcm/* ${INSTALL}/usr/lib/firmware/brcm/
   rm -r ${INSTALL}/usr/lib/kernel-overlays/base/lib/firmware/brcm

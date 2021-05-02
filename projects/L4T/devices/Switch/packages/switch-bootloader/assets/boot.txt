@@ -1,6 +1,17 @@
 load mmc 1:1 0x83000000 lakka/KERNEL
 load mmc 1:1 0x8d000000 lakka/tegra210-icosa.dtb
 
+# Store dtb filesize
+setenv dtb_part_size ${filesize}
+
+# Load dtb in memory
+fdt addr 0x8d000000 ${dtb_part_size}
+fdt resize 8192
+
+# select SDCard as main mmc
+mmc dev 1
+# store SD serial number to use as device serial
+mmc info serial#
 
 host_mac_addr=0xff
 

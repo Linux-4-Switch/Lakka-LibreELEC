@@ -35,7 +35,7 @@ PKG_AUTORECONF="no"
 
 if [ "$PROJECT" == "Generic_VK_nvidia" ]; then
   PKG_DEPENDS_TARGET+=" slang-shaders"
-elif [ "$DEVICE" == "RPi4" ]; then
+elif  [ "$DEVICE" == "RPi4"  -o "$PROJECT" == "L4T" ]; then
   PKG_DEPENDS_TARGET+=" slang-shaders glsl-shaders"
 else
   PKG_DEPENDS_TARGET+=" glsl-shaders"
@@ -104,8 +104,7 @@ if [ ! $PROJECT == "L4T" ]; then
   fi
 fi
 if [ "$PROJECT" = "L4T" ]; then
-   RETROARCH_GL="$RETROARCH_GL --disable-egl --enable-opengl --enable-vulkan --disable-vulkan_display"
-   RETROARCH_GL=${RETROARCH_GL//--enable-opengles/--disable-gles}
+   RETROARCH_GL="$RETROARCH_GL --disable-egl --enable-opengl --disable-opengles --enable-vulkan --disable-vulkan_display"
    RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
    RETROARCH_GL=${RETROARCH_GL//--enable-wayland/--disable-wayland}
    RETROARCH_GL=${RETROARCH_GL//--disable-x11/--enable-x11}
@@ -157,7 +156,7 @@ pre_make_target() {
 }
 
 make_target() {
-  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
+  make  DEBUG=1 VULKAN_DEBUG=1 V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C libretro-common/audio/dsp_filters compiler=$CC extra_flags="$CFLAGS"
 }
@@ -223,7 +222,11 @@ makeinstall_target() {
   echo "savestate_thumbnail_enable = \"false\"" >> $INSTALL/etc/retroarch.cfg
   
   # Input
-  sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
+  if [ ! "$DEVICE" == "Switch" ]; then
+    sed -i -e "s/# input_driver = sdl/input_driver = udev/" $INSTALL/etc/retroarch.cfg
+  else
+    sed -i -e "s/# input_driver = sdl/input_driver = x/" $INSTALL/etc/retroarch.cfg
+  fi
   sed -i -e "s/# input_max_users = 16/input_max_users = 5/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# input_autodetect_enable = true/input_autodetect_enable = true/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# joypad_autoconfig_dir =/joypad_autoconfig_dir = \/tmp\/joypads/" $INSTALL/etc/retroarch.cfg
@@ -288,17 +291,18 @@ makeinstall_target() {
   # Switch
   if [ "$PROJECT" == "L4T" -a "$DEVICE" == "Switch" ]; then
     sed -i -e "s/menu_mouse_enable = false/menu_mouse_enable = true/" $INSTALL/etc/retroarch.cfg
-        
     sed -i -e "s/# video_hard_sync = false/video_hard_sync = true/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/# video_crop_overscan = true/video_crop_overscan = false/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/# menu_show_online_updater = true/menu_show_online_updater = false/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/# input_joypad_driver =/input_joypad_driver = udev/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/video_threaded = true/video_threaded = false/" $INSTALL/etc/retroarch.cfg
     sed -i -e "s/input_autodetect_enable = true/input_autodetect_enable = false/"  $INSTALL/etc/retroarch.cfg
-    
+
     echo "xmb_shadows_enable = true" >> $INSTALL/etc/retroarch.cfg
+
     #Fix joycon index
     sed -i -e "s/# input_player1_joypad_index = 0/input_player1_joypad_index = \"2\"/" $INSTALL/etc/retroarch.cfg
+
     #Set Joypad as joypad with analog
     sed -i -e "s/# input_libretro_device_p1 =/input_libretro_device_p1 = \"5\"/" $INSTALL/etc/retroarch.cfg
 

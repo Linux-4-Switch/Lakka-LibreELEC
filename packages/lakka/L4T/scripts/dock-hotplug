@@ -1,0 +1,35 @@
+#!/bin/bash
+
+background_stuff() {
+    # Wait past DE's display config
+    sleep 1
+    export DISPLAY=
+
+    while [ "$DISPLAY" = "" ]
+    do
+
+        export DISPLAY=":0"
+
+        PULSE_SERVER="127.0.0.1"
+        
+        if [[ "$1" -eq 1 ]]
+        then
+            xrandr --output DP-0 --auto --primary --output DSI-0 --off
+            pactl set-card-profile 1 off
+            pactl set-card-profile 0 output:hdmi-stereo
+        else
+	    xrandr --output DSI-0 --mode 720x1280 --rotate left --panning 1280x720+0+0 --pos 0x0 --primary
+	    pactl set-card-profile 1 HiFi
+            pactl set-card-profile 0 off
+        fi
+        done
+        sleep 1
+    done
+}
+
+if grep -q 1 "/sys/class/switch/dp/state"; then
+        background_stuff 1 & disown
+else
+        background_stuff 0 & disown
+fi
+systemctl restart retroarch

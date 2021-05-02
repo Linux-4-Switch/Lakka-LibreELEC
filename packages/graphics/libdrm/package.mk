@@ -48,7 +48,14 @@ listcontains "${GRAPHIC_DRIVERS}" "freedreno" &&
 listcontains "${GRAPHIC_DRIVERS}" "etnaviv" &&
   PKG_MESON_OPTS_TARGET+=" -Detnaviv=true" || PKG_MESON_OPTS_TARGET+=" -Detnaviv=false"
 
+if [ "$PROJECT" = "L4T" ]; then
+  PKG_CONFIGURE_OPTS_TARGET="$PKG_CONFIGURE_OPTS_TARGET --enable-static"
+fi
+
 post_makeinstall_target() {
   mkdir -p ${INSTALL}/usr/bin
     cp -a ${PKG_BUILD}/.${TARGET_NAME}/tests/modetest/modetest ${INSTALL}/usr/bin/
+  if [ "$PROJECT" = "L4T" ]; then
+    rm ${INSTALL}/usr/lib/libdrm.so.2
+  fi
 }
