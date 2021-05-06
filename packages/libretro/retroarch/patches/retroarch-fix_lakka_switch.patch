@@ -1,0 +1,275 @@
+From fd395327c8749de3bfe517d86ba0a8b60290725d Mon Sep 17 00:00:00 2001
+From: Ronald Brown <rbrown4014@yahoo.com>
+Date: Thu, 6 May 2021 10:20:12 -0700
+Subject: [PATCH] Updates For Lakka Switch build.
+
+---
+ intl/msg_hash_ar.h    |  4 ----
+ intl/msg_hash_chs.h   |  4 ----
+ intl/msg_hash_de.h    |  4 ----
+ intl/msg_hash_es.h    |  4 ----
+ intl/msg_hash_fi.h    |  4 ----
+ intl/msg_hash_fr.h    |  4 ----
+ intl/msg_hash_it.h    |  4 ----
+ intl/msg_hash_ko.h    |  4 ----
+ intl/msg_hash_pl.h    |  4 ----
+ intl/msg_hash_pt_br.h |  4 ----
+ intl/msg_hash_ru.h    |  4 ----
+ intl/msg_hash_tr.h    |  4 ----
+ intl/msg_hash_us.h    |  8 --------
+ menu/menu_setting.c   | 13 +++----------
+ 14 files changed, 3 insertions(+), 66 deletions(-)
+
+diff --git a/intl/msg_hash_ar.h b/intl/msg_hash_ar.h
+index d8c45a7f1a..cf1d63949c 100644
+--- a/intl/msg_hash_ar.h
++++ b/intl/msg_hash_ar.h
+@@ -9084,10 +9084,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "تبديل GPU على مدار الساعة أو تحت الساعة."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "إعادة التشغيل إلى RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_chs.h b/intl/msg_hash_chs.h
+index ca5368a54c..936fb2211d 100644
+--- a/intl/msg_hash_chs.h
++++ b/intl/msg_hash_chs.h
+@@ -11304,10 +11304,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "超频或降频 Switch 的 GPU。"
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "重启到 RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_de.h b/intl/msg_hash_de.h
+index 4df3f8d9b5..e8df014223 100644
+--- a/intl/msg_hash_de.h
++++ b/intl/msg_hash_de.h
+@@ -10504,10 +10504,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Über- oder Untertakten der Switch GPU."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Neu starten im RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_es.h b/intl/msg_hash_es.h
+index 13f2712c59..2fcc7486b6 100644
+--- a/intl/msg_hash_es.h
++++ b/intl/msg_hash_es.h
+@@ -11336,10 +11336,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Aumenta o reduce la velocidad de la GPU de Switch."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Reiniciar al RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_fi.h b/intl/msg_hash_fi.h
+index 4e9839d0ab..c587358670 100644
+--- a/intl/msg_hash_fi.h
++++ b/intl/msg_hash_fi.h
+@@ -11216,10 +11216,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Ylikellota tai alikellota Switchin näytönohjain."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Käynnistä uudelleen RCM:ään"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_fr.h b/intl/msg_hash_fr.h
+index 53f66185c9..7a02e6d191 100644
+--- a/intl/msg_hash_fr.h
++++ b/intl/msg_hash_fr.h
+@@ -11336,10 +11336,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Overclocker ou underclocker le processeur graphique de la Switch."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Redémarrer en mode RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_it.h b/intl/msg_hash_it.h
+index 61f8234efa..d2a025084a 100644
+--- a/intl/msg_hash_it.h
++++ b/intl/msg_hash_it.h
+@@ -11256,10 +11256,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Overclocca o underclocca la GPU del Nintendo Switch."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Riavvia in RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_ko.h b/intl/msg_hash_ko.h
+index b613b564e7..daba2ccc31 100644
+--- a/intl/msg_hash_ko.h
++++ b/intl/msg_hash_ko.h
+@@ -11468,10 +11468,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "스위치 GPU를 오버클럭 또는 언더클럭합니다."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "RCM 으로 다시 시작"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_pl.h b/intl/msg_hash_pl.h
+index 4b0156d1ca..8802853d61 100644
+--- a/intl/msg_hash_pl.h
++++ b/intl/msg_hash_pl.h
+@@ -9976,10 +9976,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Podkręcanie lub obniżanie GPU."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Uruchom ponownie do RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_pt_br.h b/intl/msg_hash_pt_br.h
+index 6d7df25aa7..bda863bcdc 100644
+--- a/intl/msg_hash_pt_br.h
++++ b/intl/msg_hash_pt_br.h
+@@ -11292,10 +11292,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Faz um overclock ou underclock na CPU do Switch."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Reiniciar em RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_ru.h b/intl/msg_hash_ru.h
+index 8b801bd39c..7b62ce911b 100644
+--- a/intl/msg_hash_ru.h
++++ b/intl/msg_hash_ru.h
+@@ -11448,10 +11448,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Разгон или замедление графического процессора Switch."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Перезагрузка в RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_tr.h b/intl/msg_hash_tr.h
+index 6e6004c8b6..4af7433a20 100644
+--- a/intl/msg_hash_tr.h
++++ b/intl/msg_hash_tr.h
+@@ -10332,10 +10332,6 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "GPU hızını arttır yada düşür."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "RCM içinde yeniden başlat"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+diff --git a/intl/msg_hash_us.h b/intl/msg_hash_us.h
+index 92381cb3ef..353893ae29 100644
+--- a/intl/msg_hash_us.h
++++ b/intl/msg_hash_us.h
+@@ -12202,20 +12202,12 @@ MSG_HASH(
+    MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
+    "Overclock or underclock the Switch GPU."
+    )
+-MSG_HASH(
+-   MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-   "Reboot into RCM"
+-   )
+ #endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+ MSG_HASH(
+    MENU_ENUM_LABEL_VALUE_SWITCH_CPU_PROFILE,
+    "CPU Overclock"
+    )
+-MSG_HASH(
+-   MENU_ENUM_SUBLABEL_SWITCH_CPU_PROFILE,
+-   "Overclock the Switch CPU."
+-   )
+ #endif
+ #ifdef HAVE_LAKKA
+ MSG_HASH(
+diff --git a/menu/menu_setting.c b/menu/menu_setting.c
+index ad305b9490..6e68ad11dd 100644
+--- a/menu/menu_setting.c
++++ b/menu/menu_setting.c
+@@ -8753,15 +8753,6 @@ static bool setting_append_list(
+                &subgroup_info,
+                parent_group);
+ #endif
+-#ifdef HAVE_LAKKA_SWITCH
+-         CONFIG_ACTION(
+-               list, list_info,
+-               MENU_ENUM_LABEL_REBOOT,
+-               MENU_ENUM_LABEL_VALUE_REBOOT_RCM,
+-               &group_info,
+-               &subgroup_info,
+-               parent_group);
+-#else
+          CONFIG_ACTION(
+                list, list_info,
+                MENU_ENUM_LABEL_REBOOT,
+@@ -8769,7 +8760,7 @@ static bool setting_append_list(
+                &group_info,
+                &subgroup_info,
+                parent_group);
+-#endif
++
+          MENU_SETTINGS_LIST_CURRENT_ADD_CMD(list, list_info, CMD_EVENT_REBOOT);
+ 
+          CONFIG_ACTION(
+@@ -16359,6 +16350,7 @@ static bool setting_append_list(
+ #endif
+ 
+ #ifdef HAVE_LAKKA
++#ifndef HAVE_LAKKA_SWITCH
+          CONFIG_ACTION(
+                list, list_info,
+                MENU_ENUM_LABEL_CPU_PERFPOWER,
+@@ -16366,6 +16358,7 @@ static bool setting_append_list(
+                &group_info,
+                &subgroup_info,
+                parent_group);
++#endif
+ #endif
+ 
+          END_SUB_GROUP(list, list_info, parent_group);
+-- 
+2.26.2
+

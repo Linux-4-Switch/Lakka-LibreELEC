@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="8c08b531"
+PKG_VERSION="951ea6ba"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
@@ -35,7 +35,7 @@ PKG_AUTORECONF="no"
 
 if [ "$PROJECT" == "Generic_VK_nvidia" ]; then
   PKG_DEPENDS_TARGET+=" slang-shaders"
-elif [ "$DEVICE" == "RPi4" ]; then
+elif [ "$DEVICE" == "RPi4" ]; then #Add switch here as well, when vulkan works
   PKG_DEPENDS_TARGET+=" slang-shaders glsl-shaders"
 else
   PKG_DEPENDS_TARGET+=" glsl-shaders"
@@ -49,13 +49,13 @@ if [ "$OPENGL_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET+=" $OPENGL"
 fi
 
-if [ ! $PROJECT == "L4T" ]; then
-  if [ "$VULKAN_SUPPORT" = yes ]; then
-    PKG_DEPENDS_TARGET+=" $VULKAN"
-  fi
-else
-  PKG_DEPENDS_TARGET+=" vulkan-loader"
+#if [ ! $PROJECT == "L4T" ]; then
+if [ "$VULKAN_SUPPORT" = yes ]; then
+  PKG_DEPENDS_TARGET+=" $VULKAN"
 fi
+#else
+#  PKG_DEPENDS_TARGET+=" vulkan-loader"
+#fi
 if [ "$SAMBA_SUPPORT" = yes ]; then
   PKG_DEPENDS_TARGET+=" samba"
 fi
@@ -104,7 +104,7 @@ if [ ! $PROJECT == "L4T" ]; then
   fi
 fi
 if [ "$PROJECT" = "L4T" ]; then
-   RETROARCH_GL="$RETROARCH_GL --disable-egl --enable-opengl --enable-vulkan --disable-vulkan_display"
+   RETROARCH_GL="$RETROARCH_GL --disable-egl --enable-opengl"
    RETROARCH_GL=${RETROARCH_GL//--enable-opengles/--disable-gles}
    RETROARCH_GL=${RETROARCH_GL//--enable-kms/--disable-kms}
    RETROARCH_GL=${RETROARCH_GL//--enable-wayland/--disable-wayland}
@@ -157,7 +157,11 @@ pre_make_target() {
 }
 
 make_target() {
-  make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
+  if [ "$DEVICE" == "Switch" ]; then
+    make V=1 HAVE_LAKKA=1 HAVE_LAKKA_SWITCH=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
+  else
+    make V=1 HAVE_LAKKA=1 HAVE_ZARCH=0 HAVE_BLUETOOTH=1
+  fi
   make -C gfx/video_filters compiler=$CC extra_flags="$CFLAGS"
   make -C libretro-common/audio/dsp_filters compiler=$CC extra_flags="$CFLAGS"
 }
@@ -171,7 +175,7 @@ makeinstall_target() {
     cp $PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
     cp $PKG_BUILD/gfx/video_filters/*.filt $INSTALL/usr/share/video_filters
   mkdir -p $INSTALL/usr/share/audio_filters
-    cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.so $INSTALL/usr/share/audio_filters
+    cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.s1o $INSTALL/usr/share/audio_filters
     cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.dsp $INSTALL/usr/share/audio_filters
   
   # General configuration

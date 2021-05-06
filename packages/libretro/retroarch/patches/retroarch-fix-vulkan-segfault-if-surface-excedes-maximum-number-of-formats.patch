@@ -1,0 +1,118 @@
+diff -Naur retroarch-8c08b531/gfx/common/vulkan_common.c retroarch-8c08b531-patch/gfx/common/vulkan_common.c
+--- retroarch-8c08b531/gfx/common/vulkan_common.c	2021-05-02 19:04:20.569204296 -0700
++++ retroarch-8c08b531-patch/gfx/common/vulkan_common.c	2021-05-04 10:02:31.760126208 -0700
+@@ -2911,8 +2911,12 @@
+    vkDeviceWaitIdle(vk->context.device);
+    vulkan_acquire_clear_fences(vk);
+ 
+-   vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vk->context.gpu,
+-         vk->vk_surface, &surface_properties);
++   if (vkGetPhysicalDeviceSurfaceCapabilitiesKHR(vk->context.gpu,
++         vk->vk_surface, &surface_properties))
++   {
++      RARCH_ERR("[Vulkan]: Get surface caps failed.\n");
++      return false;
++   }
+ 
+    /* Skip creation when window is minimized */
+    if (!surface_properties.currentExtent.width &&
+@@ -2941,7 +2945,7 @@
+ #endif
+       vulkan_create_wait_fences(vk);
+ 
+-      if (     vk->emulating_mailbox 
++      if (     vk->emulating_mailbox
+             && vk->mailbox.swapchain == VK_NULL_HANDLE)
+       {
+          vulkan_emulated_mailbox_init(
+@@ -2950,10 +2954,10 @@
+          return true;
+       }
+       else if (
+-               !vk->emulating_mailbox 
++               !vk->emulating_mailbox
+             &&  vk->mailbox.swapchain != VK_NULL_HANDLE)
+       {
+-         /* We are tearing down, and entering a state 
++         /* We are tearing down, and entering a state
+           * where we are supposed to have
+           * acquired an image, so block until we have acquired. */
+          if (!vk->context.has_acquired_swapchain)
+@@ -2990,14 +2994,20 @@
+    vulkan_emulated_mailbox_deinit(&vk->mailbox);
+ 
+    present_mode_count = 0;
+-   vkGetPhysicalDeviceSurfacePresentModesKHR(
++   if (vkGetPhysicalDeviceSurfacePresentModesKHR(
+          vk->context.gpu, vk->vk_surface,
+-         &present_mode_count, NULL);
+-   if (present_mode_count < 1 || present_mode_count > 16)
++         &present_mode_count, NULL))
++   {
++      RARCH_ERR("[Vulkan]: Get present modes failed.\n");
++      return false;
++   }
++   if (present_mode_count < 1)
+    {
+       RARCH_ERR("[Vulkan]: Bogus present modes found.\n");
+       return false;
+    }
++   if (present_mode_count > 16)
++      present_mode_count = 16;
+    vkGetPhysicalDeviceSurfacePresentModesKHR(
+          vk->context.gpu, vk->vk_surface,
+          &present_mode_count, present_modes);
+@@ -3033,10 +3043,25 @@
+    RARCH_LOG("[Vulkan]: Creating swapchain with present mode: %u\n",
+          (unsigned)swapchain_present_mode);
+ 
+-   vkGetPhysicalDeviceSurfaceFormatsKHR(vk->context.gpu,
+-         vk->vk_surface, &format_count, NULL);
+-   vkGetPhysicalDeviceSurfaceFormatsKHR(vk->context.gpu,
++   /* Get format count. */
++   if (vkGetPhysicalDeviceSurfaceFormatsKHR(vk->context.gpu,
++         vk->vk_surface, &format_count, NULL))
++   {
++      RARCH_ERR("[Vulkan]: Get surface formats count failed.\n");
++      return false;
++   }
++
++   if (format_count > 256)
++      format_count = 256;
++
++   /* get actual formats list. */
++   res = vkGetPhysicalDeviceSurfaceFormatsKHR(vk->context.gpu,
+          vk->vk_surface, &format_count, formats);
++   if (res != VK_SUCCESS && res != VK_INCOMPLETE)
++   {
++      RARCH_ERR("[Vulkan]: Get surface formats failed.\n");
++      return false;
++   }
+ 
+    format.format = VK_FORMAT_UNDEFINED;
+    if (format_count == 1 && formats[0].format == VK_FORMAT_UNDEFINED)
+@@ -3049,6 +3074,7 @@
+       if (format_count == 0)
+       {
+          RARCH_ERR("[Vulkan]: Surface has no formats.\n");
++         free(formats);
+          return false;
+       }
+ 
+@@ -3065,6 +3091,8 @@
+          format = formats[0];
+    }
+ 
++   free(formats);
++
+    if (surface_properties.currentExtent.width == -1)
+    {
+       swapchain_size.width     = width;
+@@ -3227,7 +3255,6 @@
+ 
+    return true;
+ }
+-
+ void vulkan_initialize_render_pass(VkDevice device, VkFormat format,
+       VkRenderPass *render_pass)
+ {
