@@ -53,7 +53,7 @@ case "$LINUX" in
   switch)
     PKG_VERSION="switch"
     PKG_URL="https://gitlab.com/Azkali/l4t-kernel-4.9/-/archive/lakka-3.3.0/l4t-kernel-4.9-lakka-3.3.0.tar.gz"
-    PKG_PATCH_DIRS=""
+    PKG_PATCH_DIRS="Switch"
     ;;
   *)
     PKG_VERSION="5.1.18"

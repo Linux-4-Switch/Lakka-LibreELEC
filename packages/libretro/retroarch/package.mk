@@ -19,7 +19,7 @@
 ################################################################################
 
 PKG_NAME="retroarch"
-PKG_VERSION="951ea6ba"
+PKG_VERSION="6a21eca5"
 PKG_ARCH="any"
 PKG_LICENSE="GPLv3"
 PKG_SITE="https://github.com/libretro/RetroArch"
@@ -175,7 +175,7 @@ makeinstall_target() {
     cp $PKG_BUILD/gfx/video_filters/*.so $INSTALL/usr/share/video_filters
     cp $PKG_BUILD/gfx/video_filters/*.filt $INSTALL/usr/share/video_filters
   mkdir -p $INSTALL/usr/share/audio_filters
-    cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.s1o $INSTALL/usr/share/audio_filters
+    cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.so $INSTALL/usr/share/audio_filters
     cp $PKG_BUILD/libretro-common/audio/dsp_filters/*.dsp $INSTALL/usr/share/audio_filters
   
   # General configuration
@@ -193,7 +193,12 @@ makeinstall_target() {
   sed -i -e "s/# assets_directory =/assets_directory =\/tmp\/assets/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# overlay_directory =/overlay_directory =\/tmp\/overlays/" $INSTALL/etc/retroarch.cfg
   sed -i -e "s/# cheat_database_path =/cheat_database_path =\/tmp\/database\/cht/" $INSTALL/etc/retroarch.cfg
-  sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"xmb\"/" $INSTALL/etc/retroarch.cfg
+
+  if [ "$DEVICE" == "Switch" ]; then
+    sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"ozone\"/" $INSTALL/etc/retroarch.cfg
+  else
+    sed -i -e "s/# menu_driver = \"rgui\"/menu_driver = \"xmb\"/" $INSTALL/etc/retroarch.cfg
+  fi
 
   # Quick menu
   echo "core_assets_directory =/storage/roms/downloads" >> $INSTALL/etc/retroarch.cfg

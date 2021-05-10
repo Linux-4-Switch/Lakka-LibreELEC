@@ -1,25 +1,47 @@
-From fd395327c8749de3bfe517d86ba0a8b60290725d Mon Sep 17 00:00:00 2001
+From 670bce6b6bc35b6321903e52a5d2453c8c6e8f96 Mon Sep 17 00:00:00 2001
 From: Ronald Brown <rbrown4014@yahoo.com>
 Date: Thu, 6 May 2021 10:20:12 -0700
 Subject: [PATCH] Updates For Lakka Switch build.
 
 ---
- intl/msg_hash_ar.h    |  4 ----
- intl/msg_hash_chs.h   |  4 ----
- intl/msg_hash_de.h    |  4 ----
- intl/msg_hash_es.h    |  4 ----
- intl/msg_hash_fi.h    |  4 ----
- intl/msg_hash_fr.h    |  4 ----
- intl/msg_hash_it.h    |  4 ----
- intl/msg_hash_ko.h    |  4 ----
- intl/msg_hash_pl.h    |  4 ----
- intl/msg_hash_pt_br.h |  4 ----
- intl/msg_hash_ru.h    |  4 ----
- intl/msg_hash_tr.h    |  4 ----
- intl/msg_hash_us.h    |  8 --------
- menu/menu_setting.c   | 13 +++----------
- 14 files changed, 3 insertions(+), 66 deletions(-)
+ frontend/drivers/platform_unix.c |  4 ----
+ intl/msg_hash_ar.h               |  4 ----
+ intl/msg_hash_chs.h              |  4 ----
+ intl/msg_hash_de.h               |  4 ----
+ intl/msg_hash_es.h               |  4 ----
+ intl/msg_hash_fi.h               |  4 ----
+ intl/msg_hash_fr.h               |  4 ----
+ intl/msg_hash_it.h               |  4 ----
+ intl/msg_hash_ko.h               |  4 ----
+ intl/msg_hash_pl.h               |  4 ----
+ intl/msg_hash_pt_br.h            |  4 ----
+ intl/msg_hash_ru.h               |  4 ----
+ intl/msg_hash_tr.h               |  4 ----
+ intl/msg_hash_us.h               |  4 ----
+ menu/cbs/menu_cbs_get_value.c    |  4 ++++
+ menu/cbs/menu_cbs_left.c         |  2 ++
+ menu/cbs/menu_cbs_right.c        |  5 ++++-
+ menu/cbs/menu_cbs_sublabel.c     |  5 ++++-
+ menu/menu_displaylist.c          |  2 ++
+ menu/menu_setting.c              | 13 +++----------
+ 20 files changed, 19 insertions(+), 68 deletions(-)
 
+diff --git a/frontend/drivers/platform_unix.c b/frontend/drivers/platform_unix.c
+index d48cc12fe3..43e818494f 100644
+--- a/frontend/drivers/platform_unix.c
++++ b/frontend/drivers/platform_unix.c
+@@ -1114,11 +1114,7 @@ static bool frontend_unix_powerstate_check_acpi_sysfs(
+    {
+       const char *node = retro_dirent_get_name(entry);
+ 
+-#ifdef HAVE_LAKKA_SWITCH
+-      if (node && strstr(node, "max170xx_battery"))
+-#else
+       if (node && (strstr(node, "BAT") || strstr(node, "battery")))
+-#endif
+          check_proc_acpi_sysfs_battery(node,
+                &have_battery, &charging, seconds, percent);
+    }
 diff --git a/intl/msg_hash_ar.h b/intl/msg_hash_ar.h
 index d8c45a7f1a..cf1d63949c 100644
 --- a/intl/msg_hash_ar.h
@@ -201,10 +223,10 @@ index 6e6004c8b6..4af7433a20 100644
  #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
  MSG_HASH(
 diff --git a/intl/msg_hash_us.h b/intl/msg_hash_us.h
-index 92381cb3ef..353893ae29 100644
+index 92381cb3ef..50f84e7af5 100644
 --- a/intl/msg_hash_us.h
 +++ b/intl/msg_hash_us.h
-@@ -12202,20 +12202,12 @@ MSG_HASH(
+@@ -12202,10 +12202,6 @@ MSG_HASH(
     MENU_ENUM_SUBLABEL_SWITCH_GPU_PROFILE,
     "Overclock or underclock the Switch GPU."
     )
@@ -215,16 +237,152 @@ index 92381cb3ef..353893ae29 100644
  #endif
  #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
  MSG_HASH(
-    MENU_ENUM_LABEL_VALUE_SWITCH_CPU_PROFILE,
-    "CPU Overclock"
-    )
--MSG_HASH(
--   MENU_ENUM_SUBLABEL_SWITCH_CPU_PROFILE,
--   "Overclock the Switch CPU."
--   )
- #endif
+diff --git a/menu/cbs/menu_cbs_get_value.c b/menu/cbs/menu_cbs_get_value.c
+index 429c9e976a..f2a2ca9db7 100644
+--- a/menu/cbs/menu_cbs_get_value.c
++++ b/menu/cbs/menu_cbs_get_value.c
+@@ -516,6 +516,7 @@ static void menu_action_setting_disp_set_label_core_manager_entry(
+    }
+ }
+ 
++#ifndef HAVE_LAKKA_SWITCH
  #ifdef HAVE_LAKKA
- MSG_HASH(
+ static void menu_action_setting_disp_set_label_cpu_policy(
+       file_list_t* list,
+@@ -589,6 +590,7 @@ static void menu_action_cpu_governor_label(
+    strlcpy(s, d->scaling_governor, len);
+ }
+ #endif
++#endif
+ 
+ static void menu_action_setting_disp_set_label_core_lock(
+       file_list_t* list,
+@@ -1782,6 +1784,7 @@ static int menu_cbs_init_bind_get_string_representation_compare_label(
+             BIND_ACTION_GET_VALUE(cbs,
+                   menu_action_setting_disp_set_label_core_option_override_info);
+             break;
++         #ifndef HAVE_LAKKA_SWITCH
+          #ifdef HAVE_LAKKA
+          case MENU_ENUM_LABEL_CPU_POLICY_ENTRY:
+             BIND_ACTION_GET_VALUE(cbs,
+@@ -1795,6 +1798,7 @@ static int menu_cbs_init_bind_get_string_representation_compare_label(
+             BIND_ACTION_GET_VALUE(cbs, menu_action_cpu_governor_label);
+             break;
+          #endif
++         #endif
+          default:
+             return -1;
+       }
+diff --git a/menu/cbs/menu_cbs_left.c b/menu/cbs/menu_cbs_left.c
+index 1b7f49e554..bbe62cc687 100644
+--- a/menu/cbs/menu_cbs_left.c
++++ b/menu/cbs/menu_cbs_left.c
+@@ -1010,6 +1010,7 @@ static int menu_cbs_init_bind_left_compare_label(menu_file_list_cbs_t *cbs,
+             case MENU_ENUM_LABEL_MANUAL_CONTENT_SCAN_CORE_NAME:
+                BIND_ACTION_LEFT(cbs, manual_content_scan_core_name_left);
+                break;
++            #ifndef HAVE_LAKKA_SWITCH
+             #ifdef HAVE_LAKKA
+             case MENU_ENUM_LABEL_CPU_POLICY_MAX_FREQ:
+             case MENU_ENUM_LABEL_CPU_POLICY_MIN_FREQ:
+@@ -1017,6 +1018,7 @@ static int menu_cbs_init_bind_left_compare_label(menu_file_list_cbs_t *cbs,
+                BIND_ACTION_LEFT(cbs, cpu_policy_freq_tweak);
+                break;
+             #endif
++            #endif
+             default:
+                return -1;
+          }
+diff --git a/menu/cbs/menu_cbs_right.c b/menu/cbs/menu_cbs_right.c
+index 000cfe373f..728c270ff0 100644
+--- a/menu/cbs/menu_cbs_right.c
++++ b/menu/cbs/menu_cbs_right.c
+@@ -789,6 +789,7 @@ static int manual_content_scan_core_name_right(unsigned type, const char *label,
+    return 0;
+ }
+ 
++#ifdef HAVE_LAKKA_SWITCH
+ #ifdef HAVE_LAKKA
+ static int cpu_policy_freq_tweak(unsigned type, const char *label,
+       bool wraparound)
+@@ -827,7 +828,7 @@ static int cpu_policy_freq_tweak(unsigned type, const char *label,
+    return 0;
+ }
+ #endif
+-
++#endif
+ int core_setting_right(unsigned type, const char *label,
+       bool wraparound)
+ {
+@@ -1129,6 +1130,7 @@ static int menu_cbs_init_bind_right_compare_label(menu_file_list_cbs_t *cbs,
+             case MENU_ENUM_LABEL_MANUAL_CONTENT_SCAN_CORE_NAME:
+                BIND_ACTION_RIGHT(cbs, manual_content_scan_core_name_right);
+                break;
++            #ifndef HAVE_LAKKA_SWITCH
+             #ifdef HAVE_LAKKA
+             case MENU_ENUM_LABEL_CPU_POLICY_MAX_FREQ:
+             case MENU_ENUM_LABEL_CPU_POLICY_MIN_FREQ:
+@@ -1136,6 +1138,7 @@ static int menu_cbs_init_bind_right_compare_label(menu_file_list_cbs_t *cbs,
+                BIND_ACTION_RIGHT(cbs, cpu_policy_freq_tweak);
+                break;
+             #endif
++            #endif
+             default:
+                return -1;
+          }
+diff --git a/menu/cbs/menu_cbs_sublabel.c b/menu/cbs/menu_cbs_sublabel.c
+index cb0404e252..3c2851a4c1 100644
+--- a/menu/cbs/menu_cbs_sublabel.c
++++ b/menu/cbs/menu_cbs_sublabel.c
+@@ -1010,6 +1010,7 @@ static int action_bind_sublabel_bluetooth_list(
+    return 0;
+ }
+ 
++#ifndef HAVE_LAKKA_SWITCH
+ #ifdef HAVE_LAKKA
+ static int action_bind_sublabel_cpu_policy_entry_list(
+       file_list_t *list,
+@@ -1029,7 +1030,7 @@ static int action_bind_sublabel_cpu_policy_entry_list(
+    return -1;
+ }
+ #endif
+-
++#endif
+ #ifdef HAVE_CHEEVOS
+ static int action_bind_sublabel_cheevos_entry(
+       file_list_t *list,
+@@ -3942,9 +3943,11 @@ int menu_cbs_init_bind_sublabel(menu_file_list_cbs_t *cbs,
+          case MENU_ENUM_LABEL_TIMEZONE:
+             BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_timezone);
+             break;
++#ifndef HAVE_LAKKA_SWITCH
+          case MENU_ENUM_LABEL_CPU_POLICY_ENTRY:
+             BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_cpu_policy_entry_list);
+             break;
++#endif
+ #endif
+          case MENU_ENUM_LABEL_USER_LANGUAGE:
+             BIND_ACTION_SUBLABEL(cbs, action_bind_sublabel_user_language);
+diff --git a/menu/menu_displaylist.c b/menu/menu_displaylist.c
+index 02df4ca3cf..438a161d10 100644
+--- a/menu/menu_displaylist.c
++++ b/menu/menu_displaylist.c
+@@ -9834,6 +9834,7 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type,
+          /* No-op */
+          break;
+ #endif
++#ifndef HAVE_LAKKA_SWITCH
+ #ifdef HAVE_LAKKA
+       case DISPLAYLIST_CPU_POLICY_LIST:
+          menu_entries_ctl(MENU_ENTRIES_CTL_CLEAR, info->list);
+@@ -9887,6 +9888,7 @@ bool menu_displaylist_ctl(enum menu_displaylist_ctl_state type,
+          break;
+       }
+ #endif
++#endif
+ #if defined(HAVE_LAKKA_SWITCH) || defined(HAVE_LIBNX)
+       case DISPLAYLIST_SWITCH_CPU_PROFILE:
+       {
 diff --git a/menu/menu_setting.c b/menu/menu_setting.c
 index ad305b9490..6e68ad11dd 100644
 --- a/menu/menu_setting.c

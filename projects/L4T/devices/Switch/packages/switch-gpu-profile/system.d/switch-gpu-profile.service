@@ -1,14 +1,15 @@
 [Unit]
-Description=Switch Wireless Reboot Fix
-After=connman.service
+Description=Switch GPU Profile
 ConditionKernelCommandLine=!installer
+Requires=xorg.service
+After=xorg.service
 
 [Service]
 Environment=TERM=linux
 Type=oneshot
-ExecStart=/usr/bin/switch-wifi-fix
+ExecStart=/usr/bin/gpu-profile init
 StandardError=syslog
 RemainAfterExit=no
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=graphical.target
